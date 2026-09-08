@@ -10,13 +10,13 @@ public class Inventory {
         this.items = new ArrayList<>();
     }
 
-    public void  addItem(Item item){
+    public void addItem(Item item){
         if (!this.items.contains(item) && this.items.size() < capacity) {
             this.items.add(item);
         }
     }
 
-    public void  removeItem(Item item){
+    public void removeItem(Item item){
         if (this.items.contains(item)) {
             this.items.remove(item);
         }
