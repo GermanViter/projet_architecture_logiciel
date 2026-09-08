@@ -1,5 +1,5 @@
 package item;
 
-public interface Equipable {
+public interface Equipable extends Item {
     void equip();
 }

@@ -1,5 +1,5 @@
 package item;
 
-public interface Usable {
+public interface Usable extends Item {
     void use();
 }
