@@ -1,4 +1,4 @@
 package character.role;
 
-public class Warrior extends HeroClass {
+public class Warrior {
 }
