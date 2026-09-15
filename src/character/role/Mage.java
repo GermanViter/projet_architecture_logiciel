@@ -1,4 +1,4 @@
 package character.role;
 
-public class Mage extends HeroClass {
+public class Mage {
 }
