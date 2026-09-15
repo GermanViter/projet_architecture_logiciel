@@ -1,6 +1,6 @@
 package item;
 
-public class Armor implements Equipable {
+public class Armor  {
 
     private final String name;
     private final int baseProtection;
@@ -14,7 +14,7 @@ public class Armor implements Equipable {
         this.category = category;
     }
 
-    @Override
+
     public String getName() {
         return name;
     }
@@ -31,8 +31,5 @@ public class Armor implements Equipable {
         return category;
     }
 
-    @Override
-    public void equip() {
-        // Même remarque que pour Weapon.equip() : la logique réelle vit dans Hero.
-    }
+
 }

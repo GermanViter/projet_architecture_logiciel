@@ -1,10 +1,10 @@
 package character;
 import java.lang.Character;
 
-public class CheckName{
+public class HeroName {
     private final String name;
 
-    public CheckName(String name) {
+    public HeroName(String name) {
         if (!isValid(name)) {
             throw new CharacterNameNotValidException(name);
         }
@@ -19,8 +19,10 @@ public class CheckName{
     }
 
     private boolean lengthValid(String name) {
+
         return name.length() >= 2 && name.length() <= 30;
     }
+
 
     private boolean containLetterAndSpaceOnly(String name) {
         for (int i = 0; i < name.length(); i++) {
@@ -37,8 +39,3 @@ public class CheckName{
     }
 }
 
-class CharacterNameNotValidException extends RuntimeException {
-    public CharacterNameNotValidException(String nom) {
-        super("Le nom \"" + nom + "\" ne respecte pas les règles du personnage");
-    }
-}

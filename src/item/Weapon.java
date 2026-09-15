@@ -2,7 +2,7 @@ package item;
 
 import dice.Dice;
 
-public class Weapon implements Equipable {
+public class Weapon  {
 
     private final String name;
     private final Dice damage;
@@ -14,7 +14,7 @@ public class Weapon implements Equipable {
         this.category = category;
     }
 
-    @Override
+
     public String getName() {
         return name;
     }
@@ -27,8 +27,5 @@ public class Weapon implements Equipable {
         return category;
     }
 
-    @Override
-    public void equip() {
 
-    }
 }
