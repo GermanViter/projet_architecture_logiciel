@@ -1,5 +1,6 @@
 package character;
 
+
 import character.characteristics.Characteristics;
 import dice.DiceRoller;
 import item.Weapon;
@@ -57,3 +58,5 @@ public final class Hero {
         return experience;
     }
 }
+
+
