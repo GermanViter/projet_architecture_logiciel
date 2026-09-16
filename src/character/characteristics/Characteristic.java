@@ -13,14 +13,14 @@ public final class Characteristic {
 
     public static Characteristic create(int value) {
         if (value < MIN_VALUE_CREATION || value > MAX_VALUE_CREATION) {
-            throw new notValidCharacteristicException(value);
+            throw new InvalidCharacteristicException(value);
         }
         return new Characteristic(value);
     }
 
-    public Characteristic appliquerBonus(int bonus) {
+    public Characteristic applyBonus(int bonus) {
         int newValue = Math.min(value + bonus, MAX_VALUE_ABS);
-        return new Characteristic (newValue);
+        return new Characteristic(newValue);
     }
 
     public int value() {
@@ -30,8 +30,8 @@ public final class Characteristic {
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof Characteristic )) return false;
-        return this.value == ((Characteristic ) other).value;
+        if (!(other instanceof Characteristic)) return false;
+        return this.value == ((Characteristic) other).value;
     }
 
     @Override

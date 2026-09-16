@@ -1,7 +1,7 @@
 package character;
 
-class CharacterNameNotValidException extends RuntimeException {
-    public CharacterNameNotValidException(String nom) {
-        super("the name\"" + nom + "\" does not respect the rule of the character's name");
+public class CharacterNameNotValidException extends RuntimeException {
+    public CharacterNameNotValidException(String name) {
+        super("The name \"" + name + "\" does not respect the character name rules.");
     }
 }

@@ -15,44 +15,44 @@ public class Main {
         Characteristics characteristics = readCharacteristics(scanner);
 
         Hero hero = new Hero(name, characteristics);
-        System.out.println(hero.name().getName() + " - niveau " + hero.level());
+        System.out.println(hero.name().getName() + " - level " + hero.level());
     }
 
     private static HeroName readName(Scanner scanner) {
         while (true) {
-            System.out.print("Nom du héros : ");
+            System.out.print("Hero name: ");
             String input = scanner.nextLine();
             try {
                 return new HeroName(input);
             } catch (RuntimeException e) {
-                System.out.println("Erreur : " + e.getMessage());
+                System.out.println("Error: " + e.getMessage());
             }
         }
     }
 
     private static Characteristics readCharacteristics(Scanner scanner) {
         return Characteristics.builder()
-                .strength(readCharacteristicValue(scanner, "strength"))
+                .strength(readCharacteristicValue(scanner, "Strength"))
                 .dexterity(readCharacteristicValue(scanner, "Dexterity"))
                 .constitution(readCharacteristicValue(scanner, "Constitution"))
                 .intelligence(readCharacteristicValue(scanner, "Intelligence"))
-                .wisdom(readCharacteristicValue(scanner, "wisdom"))
+                .wisdom(readCharacteristicValue(scanner, "Wisdom"))
                 .charisma(readCharacteristicValue(scanner, "Charisma"))
                 .build();
     }
 
     private static int readCharacteristicValue(Scanner scanner, String label) {
         while (true) {
-            System.out.print(label + " (between 3 et 18) : ");
+            System.out.print(label + " (between 3 and 18): ");
             String input = scanner.nextLine();
             try {
                 int value = Integer.parseInt(input);
                 Characteristic.create(value);
                 return value;
             } catch (NumberFormatException e) {
-                System.out.println("Error : please enter a whole number.");
+                System.out.println("Error: please enter a whole number.");
             } catch (RuntimeException e) {
-                System.out.println("Error : " + e.getMessage());
+                System.out.println("Error: " + e.getMessage());
             }
         }
     }
