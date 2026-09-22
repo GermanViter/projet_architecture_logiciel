@@ -1,9 +1,13 @@
 package character;
 
+import character.characteristics.Characteristic;
 import character.characteristics.Characteristics;
 import dice.DiceRoller;
 import item.Weapon;
 import item.Armor;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 public final class Hero {
     private static final int STARTING_LEVEL = 1;
@@ -11,15 +15,15 @@ public final class Hero {
     private static final int UNARMED_DAMAGE = 1;
 
     private final HeroName name;
-    private final Characteristics characteristics;
+    private final ArrayList<Characteristic> characteristics;
     private int level;
     private int experience;
     private Weapon equippedWeapon;
     private Armor equippedArmor;
 
-    public Hero(HeroName name, Characteristics characteristics) {
+    public Hero(HeroName name, ArrayList<Characteristic> characteristics) {
         this.name = name;
-        this.characteristics = characteristics;
+        this.characteristics = characteristics != null ? new ArrayList<>(characteristics) : new ArrayList<>();
         this.level = STARTING_LEVEL;
         this.experience = STARTING_EXPERIENCE;
         this.equippedWeapon = null;
@@ -45,8 +49,14 @@ public final class Hero {
         return name;
     }
 
-    public Characteristics characteristics() {
-        return characteristics;
+    public ArrayList<Characteristic> characteristics() {
+        return new ArrayList<>(characteristics);
+    }
+
+    public Optional<Characteristic> getCharacteristic(Characteristics type) {
+        return characteristics.stream()
+                .filter(c -> c.type() == type)
+                .findFirst();
     }
 
     public int level() {
@@ -57,5 +67,3 @@ public final class Hero {
         return experience;
     }
 }
-
-
