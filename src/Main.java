@@ -1,10 +1,9 @@
-
 import character.HeroName;
 import character.Hero;
-
 import character.characteristics.Characteristic;
 import character.characteristics.Characteristics;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -12,7 +11,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         HeroName name = readName(scanner);
-        Characteristics characteristics = readCharacteristics(scanner);
+        ArrayList<Characteristic> characteristics = readCharacteristics(scanner);
 
         Hero hero = new Hero(name, characteristics);
         System.out.println(hero.name().getName() + " - level " + hero.level());
@@ -30,24 +29,23 @@ public class Main {
         }
     }
 
-    private static Characteristics readCharacteristics(Scanner scanner) {
-        return Characteristics.builder()
-                .strength(readCharacteristicValue(scanner, "Strength"))
-                .dexterity(readCharacteristicValue(scanner, "Dexterity"))
-                .constitution(readCharacteristicValue(scanner, "Constitution"))
-                .intelligence(readCharacteristicValue(scanner, "Intelligence"))
-                .wisdom(readCharacteristicValue(scanner, "Wisdom"))
-                .charisma(readCharacteristicValue(scanner, "Charisma"))
-                .build();
+    private static ArrayList<Characteristic> readCharacteristics(Scanner scanner) {
+        ArrayList<Characteristic> characteristics = new ArrayList<>();
+        for (Characteristics type : Characteristics.values()) {
+            int value = readCharacteristicValue(scanner, type);
+            characteristics.add(new Characteristic(type, value));
+        }
+        return characteristics;
     }
 
-    private static int readCharacteristicValue(Scanner scanner, String label) {
+    private static int readCharacteristicValue(Scanner scanner, Characteristics type) {
+        String label = type.name().charAt(0) + type.name().substring(1).toLowerCase();
         while (true) {
             System.out.print(label + " (between 3 and 18): ");
             String input = scanner.nextLine();
             try {
                 int value = Integer.parseInt(input);
-                Characteristic.create(value);
+                new Characteristic(type, value);
                 return value;
             } catch (NumberFormatException e) {
                 System.out.println("Error: please enter a whole number.");
