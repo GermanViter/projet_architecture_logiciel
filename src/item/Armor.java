@@ -1,35 +1,34 @@
 package item;
 
-public class Armor  {
+import java.util.Objects;
 
-    private final String name;
-    private final int baseProtection;
-    private final boolean allowsDexterityBonus;
+public class Armor implements Item {
+
+    private final ItemName name;
     private final ArmorCategory category;
 
-    public Armor(String name, int baseProtection, boolean allowsDexterityBonus, ArmorCategory category) {
+    public Armor(ItemName name, ArmorCategory category) {
         this.name = name;
-        this.baseProtection = baseProtection;
-        this.allowsDexterityBonus = allowsDexterityBonus;
-        this.category = category;
+        this.category = Objects.requireNonNull(category, "Armor category cannot be null.");
     }
 
+    public int computeArmorClass(int dexterityModifier) {
+        int bonus = category.allowsDexterityBonus() ? dexterityModifier : 0;
+        return category.baseProtection() + bonus;
+    }
 
+    @Override
     public String getName() {
-        return name;
-    }
-
-    public int getBaseProtection() {
-        return baseProtection;
-    }
-
-    public boolean allowsDexterityBonus() {
-        return allowsDexterityBonus;
+        return name.value();
     }
 
     public ArmorCategory getCategory() {
         return category;
     }
 
-
+    @Override
+    public String toString() {
+        return name + " (base " + category.baseProtection()
+                + (category.allowsDexterityBonus() ? ", + Dexterity" : ", no Dexterity bonus") + ")";
+    }
 }

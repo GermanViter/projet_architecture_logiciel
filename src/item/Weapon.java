@@ -1,31 +1,39 @@
 package item;
 
+import character.characteristics.Characteristics;
 import dice.Dice;
 
-public class Weapon  {
+import java.util.Objects;
 
-    private final String name;
-    private final Dice damage;
+public class Weapon implements Item {
+
+    private final ItemName name;
     private final WeaponCategory category;
 
-    public Weapon(String name, Dice damage, WeaponCategory category) {
+    public Weapon(ItemName name, WeaponCategory category) {
         this.name = name;
-        this.damage = damage;
-        this.category = category;
+        this.category = Objects.requireNonNull(category, "Weapon category cannot be null.");
     }
 
-
+    @Override
     public String getName() {
-        return name;
-    }
-
-    public Dice getDamage() {
-        return damage;
+        return name.value();
     }
 
     public WeaponCategory getCategory() {
         return category;
     }
 
+    public Dice getDamage() {
+        return category.damage();
+    }
 
+    public Characteristics getCharacteristic() {
+        return category.characteristic();
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + getDamage() + ", " + getCharacteristic() + ")";
+    }
 }
