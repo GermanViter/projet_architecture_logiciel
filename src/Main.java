@@ -2,6 +2,8 @@ import character.HeroName;
 import character.Hero;
 import character.characteristics.Characteristic;
 import character.characteristics.Characteristics;
+import character.role.CharacterRole;
+import item.Inventory;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,8 +14,10 @@ public class Main {
 
         HeroName name = readName(scanner);
         ArrayList<Characteristic> characteristics = readCharacteristics(scanner);
+        CharacterRole role = CharacterRole.WARRIOR;
+        Inventory inventory = new Inventory();
 
-        Hero hero = new Hero(name, characteristics);
+        Hero hero = new Hero(name, characteristics, role, inventory);
         System.out.println(hero.name().getName() + " - level " + hero.level());
     }
 
