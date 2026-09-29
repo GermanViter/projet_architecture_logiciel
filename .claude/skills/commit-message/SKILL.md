@@ -35,3 +35,4 @@ this format:
 - Keep the body out unless the summary line genuinely needs explaining — most
   commits in a small student project don't need one.
 - Write every commit exclusively in French as this is project is for a class that is tought in French.
+- Do not mention that claude code co-authored the commit in the commit message

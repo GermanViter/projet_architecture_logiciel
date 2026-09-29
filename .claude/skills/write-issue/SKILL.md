@@ -41,3 +41,4 @@ that needs to be made first.
 - If the user's idea is really two separate issues, say so and offer to split it.
 - Match the labels/columns to the team's board if the user has described one;
   otherwise just use the `type` field above.
+- Never mention that this issue is authored by claude code.

@@ -17,9 +17,11 @@ One or two sentences: what this PR does and why.
 ## How to test
 Steps a teammate can follow to check it works
 (for example: run the app, call a method, run the tests).
+If a test is not required (e. g. changes in documentation), then don't add this section in the pull request.
 
 ## Related issue
 `Closes #<number>` (ask the user for the number if unknown)
+If it doesn't close any issue, then don't include this section.
 
 ## Notes for reviewers
 Anything unsure, any trade-off made, or anything intentionally left out.
@@ -30,3 +32,4 @@ Anything unsure, any trade-off made, or anything intentionally left out.
 - Keep the PR focused. If the changes mix unrelated things
   (for example a refactor plus a new feature), suggest splitting it.
 - Do not invent test steps or issue numbers. Ask if unsure.
+- Do not add any line that mentions that this pull request is generated with claude code. (e. g.  Generated with \[Claude Code](https:/claude.com/claude-code))
