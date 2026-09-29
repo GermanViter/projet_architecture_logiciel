@@ -1,8 +1,10 @@
 package item;
 
+import character.role.CharacterRole;
+
 import java.util.Objects;
 
-public class Armor implements Item {
+public class Armor implements Equipable {
 
     private final ItemName name;
     private final ArmorCategory category;
@@ -24,6 +26,11 @@ public class Armor implements Item {
 
     public ArmorCategory getCategory() {
         return category;
+    }
+
+    @Override
+    public boolean canBeEquippedBy(CharacterRole role) {
+        return category.canBeEquippedBy(role);
     }
 
     @Override
