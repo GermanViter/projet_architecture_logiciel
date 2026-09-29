@@ -32,4 +32,5 @@ Anything unsure, any trade-off made, or anything intentionally left out.
 - Keep the PR focused. If the changes mix unrelated things
   (for example a refactor plus a new feature), suggest splitting it.
 - Do not invent test steps or issue numbers. Ask if unsure.
-- Do not add any line that mentions that this pull request is generated with claude code. (e. g.  Generated with \[Claude Code](https:/claude.com/claude-code))
+- Do not add any line that mentions that this pull request is generated with claude code. (e. g.  Generated with \[Claude Code](https:/claude.com/claude-code)).
+- All pull requests need to be merged into the develop branch unless specified otherwise.
