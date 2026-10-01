@@ -37,7 +37,7 @@ public class Weapon implements Equipable {
 
     @Override
     public boolean canBeEquippedBy(CharacterRole role) {
-        return category.canBeEquippedBy(role);
+        return role.canEquip(category);
     }
 
     @Override

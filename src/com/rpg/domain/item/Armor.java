@@ -17,8 +17,8 @@ public class Armor implements Equipable {
     }
 
     public int computeArmorClass(int dexterityModifier) {
-        int bonus = category.allowsDexterityBonus() ? dexterityModifier : 0;
-        return category.baseProtection() + bonus;
+        int cappedDex = Math.min(dexterityModifier, category.maxDexBonus());
+        return category.baseProtection() + Math.max(0, cappedDex);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Armor implements Equipable {
 
     @Override
     public boolean canBeEquippedBy(CharacterRole role) {
-        return category.canBeEquippedBy(role);
+        return role.canEquip(category);
     }
 
     @Override
