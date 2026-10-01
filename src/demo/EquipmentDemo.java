@@ -8,6 +8,8 @@ import com.rpg.domain.item.exceptions.*;
 import com.rpg.domain.hero.characteristics.Characteristic;
 import com.rpg.domain.hero.characteristics.Characteristics;
 import com.rpg.domain.hero.role.CharacterRole;
+import com.rpg.domain.hero.role.Warrior;
+import com.rpg.domain.hero.role.Mage;
 import com.rpg.domain.item.*;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class EquipmentDemo {
         chars.add(new Characteristic(Characteristics.WISDOM, 12));
 
         Inventory inventory = new Inventory();
-        CharacterRole role = CharacterRole.WARRIOR;
+        CharacterRole role = new Warrior();
         Hero hero = new Hero(new HeroName("Conan"), chars, role, inventory);
 
         System.out.println("Created Hero: " + hero.name().getName() + " - Role: " + hero.role());
@@ -55,10 +57,13 @@ public class EquipmentDemo {
         inventory.addItem(heavyArmor);
         System.out.println("Added 5 items. Inventory size: " + inventory.size());
 
-        // Test 2: Try to equip item not allowed for role (Mage-only staff for Warrior)
-        System.out.println("\n--- Test 2: Equip item not allowed for Warrior role ---");
+        // Test 2: Try to equip item not allowed for role
+        System.out.println("\n--- Test 2: Equip item not allowed for role ---");
         try {
-            hero.equip(staff);
+            Hero mageForTest = new Hero(new HeroName("MageTest"), chars, new Mage(), new Inventory());
+            Weapon bow = new Weapon(new ItemName("Longbow"), WeaponCategory.BOW);
+            mageForTest.inventory().addItem(bow);
+            mageForTest.equip(bow);
             System.out.println("ERROR: Should have thrown exception!");
         } catch (ClassRestrictionException e) {
             System.out.println("✓ Correctly rejected: ClassRestrictionException");
@@ -78,6 +83,9 @@ public class EquipmentDemo {
         // Test 4: Equip a valid weapon
         System.out.println("\n--- Test 4: Equip valid weapon ---");
         try {
+            Weapon sword = new Weapon(new ItemName("Iron Sword"), WeaponCategory.SWORD);
+            // Hero already has a Long Sword, we check if we can equip another sword
+            hero.inventory().addItem(sword);
             hero.equip(sword);
             System.out.println("✓ Successfully equipped: " + sword.getName());
             System.out.println("  Inventory size after equip: " + inventory.size());
