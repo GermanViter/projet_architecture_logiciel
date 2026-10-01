@@ -1,4 +1,4 @@
-package dice;
+package com.rpg.domain.dice;
 
 import java.util.Random;
 
