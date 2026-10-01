@@ -58,6 +58,10 @@ public final class Characteristic {
         return type.getArmorBonus(value, allowsDexBonus);
     }
 
+    public static int maximumCreationValue() { return MAX_VALUE_CREATION; }
+    public static int minimumCreationValue() { return MIN_VALUE_CREATION; }
+
+
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;

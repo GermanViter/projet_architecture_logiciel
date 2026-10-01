@@ -47,7 +47,7 @@ public class Main {
     private static int readCharacteristicValue(Scanner scanner, Characteristics type) {
         String label = type.name().charAt(0) + type.name().substring(1).toLowerCase();
         while (true) {
-            System.out.print(label + " (between 3 and 18): ");
+            System.out.printf("%s (between %d and %d): ", label, Characteristic.minimumCreationValue(), Characteristic.maximumCreationValue());
             String input = scanner.nextLine();
             try {
                 int value = Integer.parseInt(input);
