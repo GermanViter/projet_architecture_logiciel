@@ -1,11 +1,12 @@
 package item;
 
 import character.characteristics.Characteristics;
+import character.role.CharacterRole;
 import dice.Dice;
 
 import java.util.Objects;
 
-public class Weapon implements Item {
+public class Weapon implements Equipable {
 
     private final ItemName name;
     private final WeaponCategory category;
@@ -30,6 +31,11 @@ public class Weapon implements Item {
 
     public Characteristics getCharacteristic() {
         return category.characteristic();
+    }
+
+    @Override
+    public boolean canBeEquippedBy(CharacterRole role) {
+        return category.canBeEquippedBy(role);
     }
 
     @Override

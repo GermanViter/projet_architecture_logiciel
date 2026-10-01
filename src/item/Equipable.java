@@ -1,5 +1,7 @@
 package item;
 
+import character.role.CharacterRole;
+
 public interface Equipable extends Item {
-    void equip();
+    boolean canBeEquippedBy(CharacterRole role);
 }
