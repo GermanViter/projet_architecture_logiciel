@@ -1,6 +1,7 @@
 package com.rpg.domain.dice;
-
 import java.util.Random;
+
+
 
 public class RandomDiceRoller implements DiceRoller {
 

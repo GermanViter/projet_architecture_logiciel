@@ -1,5 +1,7 @@
 package com.rpg.domain.dice;
 
+
+
 public class Dice {
 
     private final int numberOfDice;
