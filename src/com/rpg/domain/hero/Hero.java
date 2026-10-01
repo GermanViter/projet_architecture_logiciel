@@ -110,9 +110,6 @@ public final class Hero {
     }
 
     public int maxHp() {
-        int conMod = getCharacteristic(Characteristics.CONSTITUTION)
-                .map(Characteristic::modifier)
-                .orElse(0);
-        return Math.max(1, role.baseHp() + conMod);
+        return Math.max(1, role.baseHp());
     }
 }
