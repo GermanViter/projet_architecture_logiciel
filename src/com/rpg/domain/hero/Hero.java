@@ -9,6 +9,7 @@ import com.rpg.domain.dice.DiceRoller;
 import com.rpg.domain.item.Armor;
 import com.rpg.domain.item.Equipable;
 import com.rpg.domain.item.Inventory;
+import com.rpg.domain.item.Item;
 import com.rpg.domain.item.exceptions.ItemNotOwnedException;
 import com.rpg.domain.item.Weapon;
 import java.util.ArrayList;
@@ -40,6 +41,11 @@ public final class Hero {
         this.experience = STARTING_EXPERIENCE;
         this.equippedWeapon = null;
         this.equippedArmor = null;
+        for (Item item : role.initialEquipment()) {
+            if (!inventory.isFull()) {
+                inventory.addItem(item);
+            }
+        }
     }
 
     public void equip(Equipable item) {
@@ -97,5 +103,13 @@ public final class Hero {
 
     public CharacterRole role() {
         return role;
+    }
+
+    public Inventory inventory() {
+        return inventory;
+    }
+
+    public int maxHp() {
+        return Math.max(1, role.baseHp());
     }
 }

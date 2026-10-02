@@ -1,9 +1,10 @@
 package com.rpg;
-import com.rpg.domain.hero.HeroName;
 import com.rpg.domain.hero.Hero;
+import com.rpg.domain.hero.HeroName;
 import com.rpg.domain.hero.characteristics.Characteristic;
 import com.rpg.domain.hero.characteristics.Characteristics;
 import com.rpg.domain.hero.role.CharacterRole;
+import com.rpg.domain.hero.role.Warrior;
 import com.rpg.domain.item.Inventory;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class Main {
 
         HeroName name = readName(scanner);
         ArrayList<Characteristic> characteristics = readCharacteristics(scanner);
-        CharacterRole role = CharacterRole.WARRIOR;
+        CharacterRole role = new Warrior();
         Inventory inventory = new Inventory();
 
         Hero hero = new Hero(name, characteristics, role, inventory);
@@ -46,7 +47,7 @@ public class Main {
     private static int readCharacteristicValue(Scanner scanner, Characteristics type) {
         String label = type.name().charAt(0) + type.name().substring(1).toLowerCase();
         while (true) {
-            System.out.print(label + " (between 3 and 18): ");
+            System.out.printf("%s (between %d and %d): ", label, Characteristic.minimumCreationValue(), Characteristic.maximumCreationValue());
             String input = scanner.nextLine();
             try {
                 int value = Integer.parseInt(input);

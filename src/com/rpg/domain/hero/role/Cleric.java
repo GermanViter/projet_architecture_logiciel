@@ -10,11 +10,11 @@ import com.rpg.domain.item.WeaponCategory;
 
 import java.util.List;
 
-public class Mage implements CharacterRole {
+public class Cleric implements CharacterRole {
 
     @Override
     public int baseHp() {
-        return 6;
+        return 10;
     }
 
     @Override
@@ -24,23 +24,24 @@ public class Mage implements CharacterRole {
 
     @Override
     public Characteristics mainCharacteristic() {
-        return Characteristics.INTELLIGENCE;
+        return Characteristics.WISDOM;
     }
 
     @Override
     public boolean canEquip(WeaponCategory category) {
-        return category == WeaponCategory.STAFF || category == WeaponCategory.DAGGER;
+        return category == WeaponCategory.MACE || category == WeaponCategory.SWORD;
     }
 
     @Override
     public boolean canEquip(ArmorCategory category) {
-        return category == ArmorCategory.NONE;
+        return category == ArmorCategory.LIGHT || category == ArmorCategory.MEDIUM;
     }
 
     @Override
     public List<Item> initialEquipment() {
         return List.of(
-            new Weapon(new ItemName("Staff"), WeaponCategory.STAFF)
+            new Weapon(new ItemName("Mace"), WeaponCategory.MACE),
+            new Armor(new ItemName("Mesh Armor"), ArmorCategory.MEDIUM)
         );
     }
 }

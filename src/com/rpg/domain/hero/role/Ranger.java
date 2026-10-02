@@ -10,37 +10,38 @@ import com.rpg.domain.item.WeaponCategory;
 
 import java.util.List;
 
-public class Mage implements CharacterRole {
+public class Ranger implements CharacterRole {
 
     @Override
     public int baseHp() {
-        return 6;
+        return 10;
     }
 
     @Override
     public int baseMana() {
-        return 8;
+        return 0;
     }
 
     @Override
     public Characteristics mainCharacteristic() {
-        return Characteristics.INTELLIGENCE;
+        return Characteristics.DEXTERITY;
     }
 
     @Override
     public boolean canEquip(WeaponCategory category) {
-        return category == WeaponCategory.STAFF || category == WeaponCategory.DAGGER;
+        return true;
     }
 
     @Override
     public boolean canEquip(ArmorCategory category) {
-        return category == ArmorCategory.NONE;
+        return category == ArmorCategory.NONE || category == ArmorCategory.LIGHT;
     }
 
     @Override
     public List<Item> initialEquipment() {
         return List.of(
-            new Weapon(new ItemName("Staff"), WeaponCategory.STAFF)
+            new Weapon(new ItemName("Bow"), WeaponCategory.BOW),
+            new Armor(new ItemName("Leather Armor"), ArmorCategory.LIGHT)
         );
     }
 }
