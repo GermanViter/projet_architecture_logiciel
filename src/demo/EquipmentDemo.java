@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class EquipmentDemo {
     public static void main(String[] args) {
         System.out.println("=== Hero Equipment System Demo ===\n");
+        boolean hasFailed = false;
 
         ArrayList<Characteristic> chars = new ArrayList<>();
         chars.add(new Characteristic(Characteristics.STRENGTH, 16));
@@ -38,6 +39,7 @@ public class EquipmentDemo {
         try {
             Weapon unknownSword = new Weapon(new ItemName("Unknown Sword"), WeaponCategory.SWORD);
             hero.equip(unknownSword);
+            hasFailed = true;
             System.out.println("ERROR: Should have thrown exception!");
         } catch (ItemNotOwnedException e) {
             System.out.println("✓ Correctly rejected: ItemNotOwnedException");
@@ -51,6 +53,7 @@ public class EquipmentDemo {
             Weapon bow = new Weapon(new ItemName("Longbow"), WeaponCategory.BOW);
             mageInventory.addItem(bow);
             mage.equip(bow);
+            hasFailed = true;
             System.out.println("ERROR: Should have thrown exception!");
         } catch (ClassRestrictionException e) {
             System.out.println("✓ Correctly rejected: ClassRestrictionException");
@@ -66,6 +69,7 @@ public class EquipmentDemo {
             System.out.println("✓ Successfully equipped: " + plateArmor.getName());
             System.out.println("  Inventory size: " + inventory.size());
         } catch (Exception e) {
+            hasFailed = true;
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -77,6 +81,7 @@ public class EquipmentDemo {
             hero.equip(axe);
             System.out.println("✓ Successfully equipped: " + axe.getName());
         } catch (Exception e) {
+            hasFailed = true;
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -90,6 +95,7 @@ public class EquipmentDemo {
             System.out.println("✓ Swapped to: " + sword.getName());
             System.out.println("  Inventory size before: " + sizeBefore + ", after: " + inventory.size());
         } catch (Exception e) {
+            hasFailed = true;
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -101,12 +107,13 @@ public class EquipmentDemo {
             Armor heavyArmor = new Armor(new ItemName("Heavy Plate"), ArmorCategory.HEAVY);
             mageInventory.addItem(heavyArmor);
             mage.equip(heavyArmor);
+            hasFailed = true;
             System.out.println("ERROR: Should have thrown exception!");
         } catch (ClassRestrictionException e) {
             System.out.println("✓ Mage correctly rejected heavy armor: ClassRestrictionException");
             System.out.println("  Message: " + e.getMessage());
         }
 
-        System.out.println("\n=== All tests passed! ===");
+        System.out.println(hasFailed ? "\n=== Some tests FAILED! ===" : "\n=== All tests passed! ===");
     }
 }
