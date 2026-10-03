@@ -34,14 +34,14 @@ public class Cleric implements CharacterRole {
 
     @Override
     public boolean canEquip(ArmorCategory category) {
-        return category == ArmorCategory.LIGHT || category == ArmorCategory.MEDIUM;
+        return category == ArmorCategory.LEATHER || category == ArmorCategory.CHAINMAIL;
     }
 
     @Override
     public List<Item> initialEquipment() {
         return List.of(
             new Weapon(new ItemName("Mace"), WeaponCategory.MACE),
-            new Armor(new ItemName("Mesh Armor"), ArmorCategory.MEDIUM)
+            new Armor(new ItemName("Chainmail Armour"), ArmorCategory.CHAINMAIL)
         );
     }
 }
