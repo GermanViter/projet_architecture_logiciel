@@ -80,7 +80,7 @@ public final class Hero {
     }
 
     public List<Characteristic> characteristics() {
-        return new ArrayList<Characteristic>(characteristics);
+        return new ArrayList<Characteristic>();
     }
 
     public Optional<Characteristic> getCharacteristic(Characteristics type) {

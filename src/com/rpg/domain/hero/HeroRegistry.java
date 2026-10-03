@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class HeroRegistry {
 
 
-    private ArrayList<Hero> heroes = new ArrayList<>();
+    private List<Hero> heroes = new ArrayList<>();
 
     public void addHero(Hero hero) {
         if(nameAlreadyExists(hero.name())){
