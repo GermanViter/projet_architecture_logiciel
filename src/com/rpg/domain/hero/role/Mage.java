@@ -19,7 +19,7 @@ public class Mage implements CharacterRole {
 
     @Override
     public int baseMana() {
-        return 8;
+        return 10;
     }
 
     @Override

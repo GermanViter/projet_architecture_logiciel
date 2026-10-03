@@ -1,23 +1,21 @@
 package com.rpg.domain.hero;
-import com.rpg.domain.hero.exceptions.*;
-import java.util.*;
+
+import com.rpg.domain.hero.exceptions.DuplicateHeroNameException;
 import java.util.ArrayList;
-
-
+import java.util.List;
 
 public class HeroRegistry {
 
-
-    private ArrayList<Hero> heroes = new ArrayList<>();
+    private final List<Hero> heroes = new ArrayList<>();
 
     public void addHero(Hero hero) {
-        if(nameAlreadyExists(hero.name())){
-            throw  new DuplicateHeroNameException(hero.name());
-
+        if (nameAlreadyExists(hero.name())) {
+            throw new DuplicateHeroNameException(hero.name());
         }
 
         heroes.add(hero);
     }
+
     private boolean nameAlreadyExists(HeroName name) {
         for (Hero existingHero : heroes) {
             if (existingHero.name().equals(name)) {
@@ -26,17 +24,8 @@ public class HeroRegistry {
         }
         return false;
     }
-    public void showAllHeroes() {
-        if (heroes.isEmpty()) {
-            System.out.println("no heroes found");
-            return;
-        }
-        System.out.println("=== List of heroes ===");
-        for (Hero a : heroes) {
-            System.out.println(a.toString());
 
-
-        }
+    public List<Hero> allHeroes() {
+        return new ArrayList<>(heroes);
     }
-
 }
