@@ -63,7 +63,7 @@ public class EquipmentDemo {
         // Test 3: Warrior equips heavy armor
         System.out.println("\n--- Test 3: Warrior equips heavy armor ---");
         try {
-            Armor plateArmor = new Armor(new ItemName("Plate Mail"), ArmorCategory.HEAVY);
+            Armor plateArmor = new Armor(new ItemName("Plate Mail"), ArmorCategory.CHAINMAIL);
             inventory.addItem(plateArmor);
             hero.equip(plateArmor);
             System.out.println("✓ Successfully equipped: " + plateArmor.getName());
@@ -104,7 +104,7 @@ public class EquipmentDemo {
         try {
             Inventory mageInventory = new Inventory();
             Hero mage = new Hero(new HeroName("Merlin"), chars, new Mage(), mageInventory);
-            Armor heavyArmor = new Armor(new ItemName("Heavy Plate"), ArmorCategory.HEAVY);
+            Armor heavyArmor = new Armor(new ItemName("Heavy Plate"), ArmorCategory.CHAINMAIL);
             mageInventory.addItem(heavyArmor);
             mage.equip(heavyArmor);
             hasFailed = true;
