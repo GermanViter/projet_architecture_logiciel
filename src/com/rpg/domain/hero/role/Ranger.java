@@ -34,14 +34,14 @@ public class Ranger implements CharacterRole {
 
     @Override
     public boolean canEquip(ArmorCategory category) {
-        return category == ArmorCategory.NONE || category == ArmorCategory.LIGHT;
+        return category == ArmorCategory.NONE || category == ArmorCategory.LEATHER;
     }
 
     @Override
     public List<Item> initialEquipment() {
         return List.of(
             new Weapon(new ItemName("Bow"), WeaponCategory.BOW),
-            new Armor(new ItemName("Leather Armor"), ArmorCategory.LIGHT)
+            new Armor(new ItemName("Leather Armor"), ArmorCategory.LEATHER)
         );
     }
 }
