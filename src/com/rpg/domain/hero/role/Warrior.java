@@ -29,7 +29,10 @@ public class Warrior implements CharacterRole {
 
     @Override
     public boolean canEquip(WeaponCategory category) {
-        return true;
+        return category == WeaponCategory.SWORD
+                || category == WeaponCategory.AXE
+                || category == WeaponCategory.MACE
+                || category == WeaponCategory.STAFF;
     }
 
     @Override

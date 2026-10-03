@@ -29,7 +29,10 @@ public class Ranger implements CharacterRole {
 
     @Override
     public boolean canEquip(WeaponCategory category) {
-        return true;
+        return category == WeaponCategory.BOW
+                || category == WeaponCategory.DAGGER
+                || category == WeaponCategory.SWORD;
+
     }
 
     @Override
