@@ -40,10 +40,10 @@ public enum Species {
     }
 
     public Characteristic applyBonusTo(Characteristic characteristic) {
-        return characteristic.applyBonus(bonusFor(characteristic.type()));
+        return characteristic.applyBonus(bonusGrantedTo(characteristic.type()));
     }
 
-    private int bonusFor(Characteristics type) {
+    private int bonusGrantedTo(Characteristics type) {
         return bonuses.getOrDefault(type, NO_BONUS);
     }
 }
