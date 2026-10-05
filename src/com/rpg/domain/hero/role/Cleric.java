@@ -29,7 +29,7 @@ public class Cleric implements CharacterRole {
 
     @Override
     public boolean canEquip(WeaponCategory category) {
-        return category == WeaponCategory.MACE || category == WeaponCategory.SWORD;
+        return category == WeaponCategory.MACE || category == WeaponCategory.STAFF;
     }
 
     @Override
