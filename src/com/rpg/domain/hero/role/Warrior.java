@@ -32,7 +32,8 @@ public class Warrior implements CharacterRole {
         return category == WeaponCategory.SWORD
                 || category == WeaponCategory.AXE
                 || category == WeaponCategory.MACE
-                || category == WeaponCategory.STAFF;
+                || category == WeaponCategory.STAFF
+                || category == WeaponCategory.DAGGER;
     }
 
     @Override
