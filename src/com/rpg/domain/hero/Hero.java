@@ -18,13 +18,15 @@ import java.util.Optional;
 
 
 
+
+
 public final class Hero {
     private static final int STARTING_LEVEL = 1;
     private static final int STARTING_EXPERIENCE = 0;
     private static final int UNARMED_DAMAGE = 1;
 
     private final HeroName name;
-    private final ArrayList<Characteristic> characteristics;
+    private final List<Characteristic> characteristics;
     private final Inventory inventory;
     private final CharacterRole role;
     private int level;
@@ -32,7 +34,7 @@ public final class Hero {
     private Weapon equippedWeapon;
     private Armor equippedArmor;
 
-    public Hero(HeroName name, ArrayList<Characteristic> characteristics, CharacterRole role, Inventory inventory) {
+    public Hero(HeroName name, List<Characteristic> characteristics, CharacterRole role, Inventory inventory) {
         this.name = name;
         this.characteristics = characteristics != null ? new ArrayList<>(characteristics) : new ArrayList<>();
         this.role = role;
@@ -83,8 +85,8 @@ public final class Hero {
         return name;
     }
 
-    public ArrayList<Characteristic> characteristics() {
-        return new ArrayList<>(characteristics);
+    public List<Characteristic> characteristics() {
+        return new ArrayList<Characteristic>();
     }
 
     public Optional<Characteristic> getCharacteristic(Characteristics type) {
