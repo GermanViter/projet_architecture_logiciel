@@ -41,7 +41,7 @@ public class Warrior implements CharacterRole {
     public List<Item> initialEquipment() {
         return List.of(
             new Weapon(new ItemName("Long Sword"), WeaponCategory.SWORD),
-            new Armor(new ItemName("Mesh Armor"), ArmorCategory.HEAVY)
+            new Armor(new ItemName("Mesh Armor"), ArmorCategory.CHAINMAIL)
         );
     }
 }
