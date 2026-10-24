@@ -10,6 +10,8 @@ import com.rpg.domain.item.Armor;
 import com.rpg.domain.item.Equipable;
 import com.rpg.domain.item.Inventory;
 import com.rpg.domain.item.Item;
+import com.rpg.domain.item.Potion;
+import com.rpg.domain.item.Usable;
 import com.rpg.domain.item.exceptions.ItemNotOwnedException;
 import com.rpg.domain.item.Weapon;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public final class Hero {
     private final CharacterRole role;
     private int level;
     private int experience;
+    private int currentHp;
     private Weapon equippedWeapon;
     private Armor equippedArmor;
 
@@ -43,6 +46,7 @@ public final class Hero {
         this.experience = STARTING_EXPERIENCE;
         this.equippedWeapon = null;
         this.equippedArmor = null;
+        this.currentHp = maxHp();
         for (Item item : role.initialEquipment()) {
             if (!inventory.isFull()) {
                 inventory.addItem(item);
@@ -72,6 +76,32 @@ public final class Hero {
             inventory.removeItem(item);
             this.equippedArmor = armor;
         }
+    }
+
+    public void use(Usable item, DiceRoller roller) {
+        if (!inventory.contains(item)) {
+            throw new ItemNotOwnedException(item);
+        }
+
+        if (item instanceof Potion potion) {
+            int healedAmount = potion.getHealing().roll(roller);
+            heal(healedAmount);
+            inventory.removeItem(item);
+        } else {
+            item.use();
+        }
+    }
+
+    public void takeDamage(int amount) {
+        this.currentHp = Math.max(0, this.currentHp - amount);
+    }
+
+    public void heal(int amount) {
+        this.currentHp = Math.min(maxHp(), this.currentHp + amount);
+    }
+
+    public int currentHp() {
+        return currentHp;
     }
 
     public int attack(DiceRoller roller) {
