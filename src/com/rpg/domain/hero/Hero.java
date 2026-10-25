@@ -63,19 +63,23 @@ public final class Hero {
             throw new ClassRestrictionException(item.getName(), role);
         }
 
-        if (item instanceof Weapon weapon) {
-            if (equippedWeapon != null) {
-                inventory.addItem(equippedWeapon);
-            }
-            inventory.removeItem(item);
-            this.equippedWeapon = weapon;
-        } else if (item instanceof Armor armor) {
-            if (equippedArmor != null) {
-                inventory.addItem(equippedArmor);
-            }
-            inventory.removeItem(item);
-            this.equippedArmor = armor;
+        item.equip(this);
+    }
+
+    public void equipWeapon(Weapon weapon) {
+        if (equippedWeapon != null) {
+            inventory.addItem(equippedWeapon);
         }
+        inventory.removeItem(weapon);
+        this.equippedWeapon = weapon;
+    }
+
+    public void equipArmor(Armor armor) {
+        if (equippedArmor != null) {
+            inventory.addItem(equippedArmor);
+        }
+        inventory.removeItem(armor);
+        this.equippedArmor = armor;
     }
 
     public void use(Usable item, DiceRoller roller) {
