@@ -146,6 +146,9 @@ public final class Hero {
     }
 
     public int maxHp() {
-        return Math.max(1, role.baseHp());
+        int constitutionModifier = getCharacteristic(Characteristics.CONSTITUTION)
+                .map(Characteristic::modifier)
+                .orElse(0);
+        return Math.max(1, role.baseHp() + constitutionModifier);
     }
 }
