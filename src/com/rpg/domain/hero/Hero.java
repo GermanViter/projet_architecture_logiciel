@@ -49,13 +49,13 @@ public final class Hero {
         this.currentHp = maxHp();
         for (Item item : role.initialEquipment()) {
             if (!inventory.isFull()) {
-                inventory.addItem(item);
+                addItem(item);
             }
         }
     }
 
     public void equip(Equipable item) {
-        if (!inventory.contains(item)) {
+        if (!hasItem(item)) {
             throw new ItemNotOwnedException(item);
         }
 
@@ -63,30 +63,34 @@ public final class Hero {
             throw new ClassRestrictionException(item.getName(), role);
         }
 
-        if (item instanceof Weapon weapon) {
-            if (equippedWeapon != null) {
-                inventory.addItem(equippedWeapon);
-            }
-            inventory.removeItem(item);
-            this.equippedWeapon = weapon;
-        } else if (item instanceof Armor armor) {
-            if (equippedArmor != null) {
-                inventory.addItem(equippedArmor);
-            }
-            inventory.removeItem(item);
-            this.equippedArmor = armor;
+        item.equip(this);
+    }
+
+    public void equipWeapon(Weapon weapon) {
+        if (equippedWeapon != null) {
+            addItem(equippedWeapon);
         }
+        removeItem(weapon);
+        this.equippedWeapon = weapon;
+    }
+
+    public void equipArmor(Armor armor) {
+        if (equippedArmor != null) {
+            addItem(equippedArmor);
+        }
+        removeItem(armor);
+        this.equippedArmor = armor;
     }
 
     public void use(Usable item, DiceRoller roller) {
-        if (!inventory.contains(item)) {
+        if (!hasItem(item)) {
             throw new ItemNotOwnedException(item);
         }
 
         if (item instanceof Potion potion) {
             int healedAmount = potion.getHealing().roll(roller);
             heal(healedAmount);
-            inventory.removeItem(item);
+            removeItem(item);
         } else {
             item.use();
         }
@@ -116,7 +120,7 @@ public final class Hero {
     }
 
     public List<Characteristic> characteristics() {
-        return new ArrayList<Characteristic>();
+        return Collections.unmodifiableList(characteristics);
     }
 
     public Optional<Characteristic> getCharacteristic(Characteristics type) {
@@ -137,11 +141,26 @@ public final class Hero {
         return role;
     }
 
-    public Inventory inventory() {
-        return inventory;
+    public void addItem(Item item) {
+        inventory.addItem(item);
+    }
+
+    public void removeItem(Item item) {
+        inventory.removeItem(item);
+    }
+
+    public boolean hasItem(Item item) {
+        return inventory.contains(item);
+    }
+
+    public int getInventorySize() {
+        return inventory.size();
     }
 
     public int maxHp() {
-        return Math.max(1, role.baseHp());
+        int constitutionModifier = getCharacteristic(Characteristics.CONSTITUTION)
+                .map(Characteristic::modifier)
+                .orElse(0);
+        return Math.max(1, role.baseHp() + constitutionModifier);
     }
 }
