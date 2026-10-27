@@ -120,7 +120,7 @@ public final class Hero {
     }
 
     public List<Characteristic> characteristics() {
-        return new ArrayList<Characteristic>();
+        return Collections.unmodifiableList(characteristics);
     }
 
     public Optional<Characteristic> getCharacteristic(Characteristics type) {
