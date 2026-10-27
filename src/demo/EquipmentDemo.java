@@ -48,10 +48,9 @@ public class EquipmentDemo {
         // Test 2: Mage cannot equip a BOW (class restriction)
         System.out.println("\n--- Test 2: Mage cannot equip a BOW ---");
         try {
-            Inventory mageInventory = new Inventory();
-            Hero mage = new Hero(new HeroName("Gandalf"), chars, new Mage(), mageInventory);
+            Hero mage = new Hero(new HeroName("Gandalf"), chars, new Mage(), new Inventory());
             Weapon bow = new Weapon(new ItemName("Longbow"), WeaponCategory.BOW);
-            mageInventory.addItem(bow);
+            mage.addItem(bow);
             mage.equip(bow);
             hasFailed = true;
             System.out.println("ERROR: Should have thrown exception!");
@@ -64,10 +63,10 @@ public class EquipmentDemo {
         System.out.println("\n--- Test 3: Warrior equips heavy armor ---");
         try {
             Armor plateArmor = new Armor(new ItemName("Plate Mail"), ArmorCategory.CHAINMAIL);
-            inventory.addItem(plateArmor);
+            hero.addItem(plateArmor);
             hero.equip(plateArmor);
             System.out.println("✓ Successfully equipped: " + plateArmor.getName());
-            System.out.println("  Inventory size: " + inventory.size());
+            System.out.println("  Inventory size: " + hero.getInventorySize());
         } catch (Exception e) {
             hasFailed = true;
             System.out.println("ERROR: " + e.getMessage());
@@ -77,7 +76,7 @@ public class EquipmentDemo {
         System.out.println("\n--- Test 4: Warrior equips axe ---");
         try {
             Weapon axe = new Weapon(new ItemName("Battle Axe"), WeaponCategory.AXE);
-            inventory.addItem(axe);
+            hero.addItem(axe);
             hero.equip(axe);
             System.out.println("✓ Successfully equipped: " + axe.getName());
         } catch (Exception e) {
@@ -89,11 +88,11 @@ public class EquipmentDemo {
         System.out.println("\n--- Test 5: Swap weapon ---");
         try {
             Weapon sword = new Weapon(new ItemName("Iron Sword"), WeaponCategory.SWORD);
-            inventory.addItem(sword);
-            int sizeBefore = inventory.size();
+            hero.addItem(sword);
+            int sizeBefore = hero.getInventorySize();
             hero.equip(sword);
             System.out.println("✓ Swapped to: " + sword.getName());
-            System.out.println("  Inventory size before: " + sizeBefore + ", after: " + inventory.size());
+            System.out.println("  Inventory size before: " + sizeBefore + ", after: " + hero.getInventorySize());
         } catch (Exception e) {
             hasFailed = true;
             System.out.println("ERROR: " + e.getMessage());
@@ -102,10 +101,9 @@ public class EquipmentDemo {
         // Test 6: Mage cannot use heavy armor
         System.out.println("\n--- Test 6: Mage cannot equip heavy armor ---");
         try {
-            Inventory mageInventory = new Inventory();
-            Hero mage = new Hero(new HeroName("Merlin"), chars, new Mage(), mageInventory);
+            Hero mage = new Hero(new HeroName("Merlin"), chars, new Mage(), new Inventory());
             Armor heavyArmor = new Armor(new ItemName("Heavy Plate"), ArmorCategory.CHAINMAIL);
-            mageInventory.addItem(heavyArmor);
+            mage.addItem(heavyArmor);
             mage.equip(heavyArmor);
             hasFailed = true;
             System.out.println("ERROR: Should have thrown exception!");
