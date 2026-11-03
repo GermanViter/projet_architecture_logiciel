@@ -1,35 +1,27 @@
 package com.rpg.domain.item;
-import com.rpg.domain.item.exceptions.*;
-import com.rpg.domain.hero.role.CharacterRole;
-import java.util.Set;
-
-
-
 
 public enum ArmorCategory {
-    NONE(10, true, Set.of(CharacterRole.WARRIOR, CharacterRole.MAGE)),
-    LIGHT(11, true, Set.of(CharacterRole.WARRIOR, CharacterRole.MAGE)),
-    HEAVY(16, false, Set.of(CharacterRole.WARRIOR));
+    NONE(10, Integer.MAX_VALUE),
+    LEATHER(11, Integer.MAX_VALUE),
+    CHAINMAIL(16, 0);
 
     private final int baseProtection;
-    private final boolean allowsDexterityBonus;
-    private final Set<CharacterRole> allowedRoles;
+    private final int maxDexBonus;
 
-    ArmorCategory(int baseProtection, boolean allowsDexterityBonus, Set<CharacterRole> allowedRoles) {
+    ArmorCategory(int baseProtection, int maxDexBonus) {
         this.baseProtection = baseProtection;
-        this.allowsDexterityBonus = allowsDexterityBonus;
-        this.allowedRoles = allowedRoles;
+        this.maxDexBonus = maxDexBonus;
     }
 
     public int baseProtection() {
         return baseProtection;
     }
 
-    public boolean allowsDexterityBonus() {
-        return allowsDexterityBonus;
+    public int maxDexBonus() {
+        return maxDexBonus;
     }
 
-    public boolean canBeEquippedBy(CharacterRole role) {
-        return allowedRoles.contains(role);
+    public boolean allowsDexterityBonus() {
+        return maxDexBonus > 0;
     }
 }

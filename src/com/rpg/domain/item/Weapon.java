@@ -2,6 +2,7 @@ package com.rpg.domain.item;
 import com.rpg.domain.item.exceptions.*;
 import com.rpg.domain.hero.characteristics.Characteristics;
 import com.rpg.domain.hero.role.CharacterRole;
+import com.rpg.domain.hero.Hero;
 import com.rpg.domain.dice.Dice;
 import java.util.Objects;
 
@@ -37,7 +38,12 @@ public class Weapon implements Equipable {
 
     @Override
     public boolean canBeEquippedBy(CharacterRole role) {
-        return category.canBeEquippedBy(role);
+        return role.canEquip(category);
+    }
+
+    @Override
+    public void equip(Hero hero) {
+        hero.equipWeapon(this);
     }
 
     @Override

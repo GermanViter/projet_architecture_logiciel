@@ -36,7 +36,8 @@ immediate collaborator, not to your collaborator's collaborators
 
 Apply this everywhere: healing, spells, items, equipment, turns, combat
 progression. A client never sets HP, mana, inventory contents, or turn order
-directly — always through a domain action.
+directly — always through a domain action. See **Using the API** in
+`docs/domain-rules.md` for how this plays out at the API boundary.
 
 ## Encapsulation and object design
 
@@ -63,9 +64,10 @@ directly — always through a domain action.
 A `String name` or `int health` looks harmless, but if that value has its
 own rules (a name can't be blank; health can't go negative or above max), a
 primitive can't protect those rules. Wrap it: `CharacterName`, `Health`,
-etc. — small classes that own their own validation and let the containing
-class delegate to them (`Character.takeDamage()` calls
-`health.takeDamage()`) rather than reimplementing the rule.
+`AbilityScore`, `ArmorClass`, etc. — small classes that own their own
+validation and let the containing class delegate to them
+(`Character.takeDamage()` calls `health.takeDamage()`) rather than
+reimplementing the rule.
 
 ## Prefer composition over inheritance
 
@@ -87,7 +89,10 @@ contract (Strategy). Adding `SpearAttack` later means adding a class, not
 touching `Character`. Prefer this over `if`/`switch` on a type/enum wherever
 a behavior varies by kind of thing (attack style, spell effect, creature
 behavior) — a repeated switch on type is a code smell (see below) meaning an
-interface + polymorphism was probably called for instead.
+interface + polymorphism was probably called for instead. This is directly
+useful for **species, classes, weapons, spells, and creature behaviors**
+below — all are explicitly meant to grow in future versions, so none of
+them should be a hardcoded `if/switch` chain.
 
 **LSP caution**: if a subtype (or a Strategy implementation) has to refuse
 part of the contract it inherits/implements (throwing
@@ -107,10 +112,11 @@ inheritance/interface relationship is probably wrong — don't force it.
   instead. `damage *= 2; // critical hit bonus` should become
   `damage = applyCriticalHitBonus(damage);`.
 - **Errors are part of the contract, and they should speak the domain.**
-  Prefer a domain exception (`InvalidCharacterNameException`) over a generic
-  one (`IllegalArgumentException`) — it lets calling code react to the
-  specific rule that was violated, and the exception's type documents which
-  rule that was.
+  Prefer a domain exception (`InvalidCharacterNameException`,
+  `InsufficientManaException`, `InventoryFullException`) over a generic one
+  (`IllegalArgumentException`) — it lets calling code react to the specific
+  rule that was violated, and the exception's type documents which rule
+  that was.
 - **Parameter Objects for data that always travels together.** If several
   values are always passed together to represent one message
   (`attacker, target, weapon, bonus, critical`), wrap them in a record
@@ -153,25 +159,26 @@ When designing or reviewing a class, ask:
 - **Ubiquitous language**: code should use the same words the game rules
   use. If the spec says "dégâts"/"damage", the method is `takeDamage()`, not
   a generic number mutation. Keep the mapping between French discussion
-  and English (or French) code consistent and explicit.
+  and English code consistent and explicit (see
+  [Language convention](#language-convention)).
 - **Entity vs. Value Object** — ask: if two instances have identical
   values, are they the same thing?
-    - **Entity**: defined by identity, not by current state (a `Hero`/
-      `Character`, a `Game`, likely a `Creature` instance in combat — two
-      identical goblins are still two different creatures).
-    - **Value Object**: defined by its value, ideally immutable, replaced
-      rather than mutated (`CharacterName`, `Health`, an ability score, a
-      damage amount).
+  - **Entity**: defined by identity, not by current state (a `Hero`/
+    `Character`, a `Game`, a `Combat`, a `Creature` instance in combat — two
+    identical goblins are still two different creatures).
+  - **Value Object**: defined by its value, ideally immutable, replaced
+    rather than mutated (`CharacterName`, `Health`, `AbilityScore`, a
+    damage amount, `ArmorClass`).
 - **Invariants**: a rule that must always hold. Each invariant belongs to
   whichever object naturally has the information to protect it ("health
-  never exceeds max" → `Health`; "a defeated character can't attack" →
+  never exceeds max" → `Health`; "a defeated character can't act" →
   `Character`'s own behavior). Protecting a rule in exactly one logical
   place means the rest of the system can trust the object instead of
   re-validating everywhere.
 - **Aggregates**: when a rule spans multiple objects ("a hero can only
-  equip a weapon they own" spans `Hero` and `Inventory`), pick an
-  **aggregate root** (likely `Hero`/`Character`) that the outside world
-  talks to, and let it enforce cross-object consistency
+  equip a weapon they own and their class allows" spans `Hero` and
+  `Inventory`), pick an **aggregate root** (likely `Hero`/`Character`) that
+  the outside world talks to, and let it enforce cross-object consistency
   (`hero.equip(weapon)`, not
   `hero.getInventory().remove(weapon); hero.setEquippedWeapon(weapon)`
   from outside). Not everything related belongs to the same aggregate —
@@ -193,63 +200,36 @@ When designing or reviewing a class, ask:
 
 - **Code is in English**: class names, method names, variables, exceptions —
   everything in the source. So the Epic's French domain terms translate:
-  `Guerrier` → `Warrior`, `Rôdeur` → `Ranger`, `Gobelin` → `Goblin`, etc.
+  `Guerrier` → `Warrior`, `Rôdeur` → `Ranger`, `Mage` → `Mage`, `Clerc` →
+  `Cleric`, `Gobelin` → `Goblin`, `Orc` → `Orc`, `Troll` → `Troll`, etc.
   Keep the mapping to the Epic's French vocabulary explicit and consistent
   (a comment-free glossary in a design doc, not in the code) so the
   ubiquitous language still holds even across the translation.
 - **Everything Git/process-facing is in French**: issue titles and
   descriptions, commit messages, branch names, PR titles and descriptions,
-  and PR review comments. This applies on top of the formats above —
-  Conventional Commits' `type(scope): description` keeps the English
-  `type` keyword (`feat`, `fix`, etc.) but the description itself is in
-  French, e.g. `feat(personnage): ajoute la validation du nom`. Same for
-  branch names: `feature/12-validation-du-nom`, not
-  `feature/12-name-validation`.
+  and PR review comments. This applies on top of the formats in
+  [Git workflow](#git-workflow) — Conventional Commits' `type(scope):
+  description` keeps the English `type` keyword (`feat`, `fix`, etc.) but
+  the description itself is in French, e.g.
+  `feat(personnage): ajoute la validation du nom`. Same for branch names:
+  `feature/12-validation-du-nom`, not `feature/12-name-validation`.
 
-## Domain vocabulary (RPG spec)
 
-Below the concepts keep their French Epic names for clarity in this
-document; in code, use the English translation per the convention above.
+## Reference documents (read on demand, not every turn)
 
-- **Player / Hero**: a player creates heroes; a hero persists between
-  combats (HP/effects don't reset automatically).
-- **Lobby**: max 4 players, each picks one of their own heroes, then starts
-  a Game.
-- **Game**: the selected heroes become the Group. A game has at most one
-  active Combat at a time. Game ends when the whole group is defeated.
-- **Encounter**: a set of creatures to fight. Won encounters can't repeat in
-  the same game.
-- **Combat**: rounds of turns in initiative order. Tracks: current round,
-  initiative order, whose turn it is. No participants added once combat
-  starts.
-- **Creature**: engine-controlled enemy. Not a Hero — no class, level, XP,
-  inventory, or six ability scores.
+Two files hold bulky reference material pulled out of this file to keep it
+short — read the relevant one whenever a task actually touches that part of
+the project, rather than assuming its content from memory:
 
-### Key formulas (not exhaustive — the Epic PDF is the source of truth)
+- **`docs/domain-rules.md`** — the full Epic ruleset: character creation,
+  ability scores, species/class tables, equipment, encounters, creatures,
+  combat, spells, XP/leveling, the event log, and the API surface
+  (`Using the API`, error handling expectations).
+- **`docs/rest-api-guide.md`** — the HTTP/Jersey reference: resource/URI
+  conventions, HTTP verbs, status codes, the domain-exception-to-HTTP
+  mapping, Jersey annotations and code patterns, pagination, HATEOAS.
 
-- **Ability modifier**: `floor((score - 10) / 2)`.
-- **HP max (level 1)**: `class base HP + Constitution modifier`, min 1.
-- **Attack roll**: `1d20 + ability modifier + proficiency bonus (+2 at
-  level 1)` vs target AC. Natural 1 always misses; natural 20 always hits
-  and doubles damage dice (not the flat bonus).
-- **Mana**: never negative, never above max; insufficient mana blocks the
-  spell.
-- **Inventory**: max 10 items; can't equip/use what you don't own; can't
-  add to a full inventory.
-- **XP split**: integer division, remainder dropped.
-- **Rest**: full HP + full mana + clears temporary effects; unusable
-  mid-combat.
-
-**Determinism requirement**: the team must be able to force/verify specific
-outcomes (a d20 roll of 1 or 20, a known initiative, exact damage/healing) —
-don't hardcode randomness in a way that can't be substituted later for
-verification, once testing is covered in class.
-
-### Out of scope for this version
-
-No tactical map/positioning, no real-time or WebSockets, no PvP, no
-crafting, no full economy. Don't build for these; don't let their absence
-block good extensibility elsewhere.
+---
 
 ## Git workflow
 
@@ -303,23 +283,28 @@ block good extensibility elsewhere.
   `write-issue`, `commit-message`, `clean-code-refactor`,
   `java-conventions`, `architecture-decisions` — use them for their
   respective tasks; keep `commit-message` and `pr-description` aligned with
-  the Conventional Commits format above.
+  the Conventional Commits format above and the French language convention.
 
 ## Current scope reminders
 
 - **No tests yet** (not covered in class) — don't add a test framework
   unprompted.
-- **No API/HTTP layer yet** — focus is the domain model: identity, name and
-  its rules, six ability scores and modifiers, species/class bonuses, HP,
-  mana, level/XP, a clear creation strategy (e.g. a `HeroFactory`),
-  inventory and its capacity, weapons, armor, potions, equip rules
-  (including class restrictions). Don't build the REST API, persistence,
-  full lobby, combat engine, turn system, or Kanban/game loop yet — that
-  comes in later sessions.
+- **The API/HTTP layer is now in scope** (see `docs/rest-api-guide.md`) —
+  this followed the
+  domain-first work: identity, name and its rules, six ability scores and
+  modifiers, species/class bonuses, HP, mana, level/XP, a clear creation
+  strategy (e.g. a `HeroFactory`), inventory and its capacity, weapons,
+  armor, potions, equip rules. Exact URIs/resources beyond what's sketched
+  above (`Using the API`) are still to be designed by the team — don't
+  assume a shape that hasn't been agreed on. Persistence (a real database),
+  the full lobby/game loop, and the combat engine's turn system may still
+  be ahead depending on where the team actually is — check before
+  assuming they're in scope.
 - Be ready to explain, for whatever's built so far: which classes are
   Entities vs. Value Objects, which rules are invariants and where they're
   enforced, how the boundary between `Hero`, `Inventory`, and `Equipment`
-  was drawn, and where an interface/composition/Factory was used to limit
-  the spread of change.
+  was drawn, where an interface/composition/Factory was used to limit the
+  spread of change, and — once the api layer exists — why each DTO,
+  mapper, and `ExceptionMapper` lives where it does.
 - Fill in `java-conventions/SKILL.md` and `architecture-decisions/SKILL.md`
   placeholders once the team agrees on naming/package structure.

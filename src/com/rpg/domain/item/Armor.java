@@ -1,6 +1,7 @@
 package com.rpg.domain.item;
 import com.rpg.domain.item.exceptions.*;
 import com.rpg.domain.hero.role.CharacterRole;
+import com.rpg.domain.hero.Hero;
 import java.util.Objects;
 
 
@@ -17,8 +18,8 @@ public class Armor implements Equipable {
     }
 
     public int computeArmorClass(int dexterityModifier) {
-        int bonus = category.allowsDexterityBonus() ? dexterityModifier : 0;
-        return category.baseProtection() + bonus;
+        int cappedDex = Math.min(dexterityModifier, category.maxDexBonus());
+        return category.baseProtection() + Math.max(0, cappedDex);
     }
 
     @Override
@@ -32,7 +33,12 @@ public class Armor implements Equipable {
 
     @Override
     public boolean canBeEquippedBy(CharacterRole role) {
-        return category.canBeEquippedBy(role);
+        return role.canEquip(category);
+    }
+
+    @Override
+    public void equip(Hero hero) {
+        hero.equipArmor(this);
     }
 
     @Override

@@ -26,6 +26,17 @@ public enum Characteristics {
             return allowsDexBonus ? modifier(score) : 0;
         }
     },
+    CONSTITUTION {
+        @Override
+        public int getInitiativeBonus(int score) {
+            return 0;
+        }
+
+        @Override
+        public int getArmorBonus(int score, boolean allowsDexBonus) {
+            return 0;
+        }
+    },
     INTELLIGENCE {
         @Override
         public int getInitiativeBonus(int score) {
@@ -38,6 +49,17 @@ public enum Characteristics {
         }
     },
     WISDOM {
+        @Override
+        public int getInitiativeBonus(int score) {
+            return 0;
+        }
+
+        @Override
+        public int getArmorBonus(int score, boolean allowsDexBonus) {
+            return 0;
+        }
+    },
+    CHARISMA {
         @Override
         public int getInitiativeBonus(int score) {
             return 0;

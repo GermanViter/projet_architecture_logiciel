@@ -9,6 +9,9 @@ import com.rpg.domain.dice.DiceRoller;
 import com.rpg.domain.item.Armor;
 import com.rpg.domain.item.Equipable;
 import com.rpg.domain.item.Inventory;
+import com.rpg.domain.item.Item;
+import com.rpg.domain.item.Potion;
+import com.rpg.domain.item.Usable;
 import com.rpg.domain.item.exceptions.ItemNotOwnedException;
 import com.rpg.domain.item.Weapon;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public final class Hero {
     private final CharacterRole role;
     private int level;
     private int experience;
+    private int currentHp;
     private Weapon equippedWeapon;
     private Armor equippedArmor;
 
@@ -42,10 +46,16 @@ public final class Hero {
         this.experience = STARTING_EXPERIENCE;
         this.equippedWeapon = null;
         this.equippedArmor = null;
+        this.currentHp = maxHp();
+        for (Item item : role.initialEquipment()) {
+            if (!inventory.isFull()) {
+                addItem(item);
+            }
+        }
     }
 
     public void equip(Equipable item) {
-        if (!inventory.contains(item)) {
+        if (!hasItem(item)) {
             throw new ItemNotOwnedException(item);
         }
 
@@ -53,19 +63,49 @@ public final class Hero {
             throw new ClassRestrictionException(item.getName(), role);
         }
 
-        if (item instanceof Weapon weapon) {
-            if (equippedWeapon != null) {
-                inventory.addItem(equippedWeapon);
-            }
-            inventory.removeItem(item);
-            this.equippedWeapon = weapon;
-        } else if (item instanceof Armor armor) {
-            if (equippedArmor != null) {
-                inventory.addItem(equippedArmor);
-            }
-            inventory.removeItem(item);
-            this.equippedArmor = armor;
+        item.equip(this);
+    }
+
+    public void equipWeapon(Weapon weapon) {
+        if (equippedWeapon != null) {
+            addItem(equippedWeapon);
         }
+        removeItem(weapon);
+        this.equippedWeapon = weapon;
+    }
+
+    public void equipArmor(Armor armor) {
+        if (equippedArmor != null) {
+            addItem(equippedArmor);
+        }
+        removeItem(armor);
+        this.equippedArmor = armor;
+    }
+
+    public void use(Usable item, DiceRoller roller) {
+        if (!hasItem(item)) {
+            throw new ItemNotOwnedException(item);
+        }
+
+        if (item instanceof Potion potion) {
+            int healedAmount = potion.getHealing().roll(roller);
+            heal(healedAmount);
+            removeItem(item);
+        } else {
+            item.use();
+        }
+    }
+
+    public void takeDamage(int amount) {
+        this.currentHp = Math.max(0, this.currentHp - amount);
+    }
+
+    public void heal(int amount) {
+        this.currentHp = Math.min(maxHp(), this.currentHp + amount);
+    }
+
+    public int currentHp() {
+        return currentHp;
     }
 
     public int attack(DiceRoller roller) {
@@ -99,5 +139,28 @@ public final class Hero {
 
     public CharacterRole role() {
         return role;
+    }
+
+    public void addItem(Item item) {
+        inventory.addItem(item);
+    }
+
+    public void removeItem(Item item) {
+        inventory.removeItem(item);
+    }
+
+    public boolean hasItem(Item item) {
+        return inventory.contains(item);
+    }
+
+    public int getInventorySize() {
+        return inventory.size();
+    }
+
+    public int maxHp() {
+        int constitutionModifier = getCharacteristic(Characteristics.CONSTITUTION)
+                .map(Characteristic::modifier)
+                .orElse(0);
+        return Math.max(1, role.baseHp() + constitutionModifier);
     }
 }
