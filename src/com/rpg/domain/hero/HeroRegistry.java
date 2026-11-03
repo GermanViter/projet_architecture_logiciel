@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HeroRegistry {
-
     private final List<Hero> heroes = new ArrayList<>();
 
     public void addHero(Hero hero) {
