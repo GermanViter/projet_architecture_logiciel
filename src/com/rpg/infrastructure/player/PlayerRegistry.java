@@ -1,13 +1,18 @@
-package com.rpg.domain.player;
+package com.rpg.infrastructure.player;
 
+import com.rpg.domain.player.Email;
+import com.rpg.domain.player.Player;
+import com.rpg.domain.player.PlayerRepository;
+import com.rpg.domain.player.Pseudonym;
 import com.rpg.domain.player.exceptions.DuplicatePlayerException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class PlayerRegistry {
+public final class PlayerRegistry implements PlayerRepository {
     private final List<Player> players = new ArrayList<>();
 
+    @Override
     public void addPlayer(Player player) {
         if (pseudonymAlreadyExists(player.pseudonym())) {
             throw new DuplicatePlayerException("pseudonym", player.pseudonym().getValue());

@@ -1,7 +1,7 @@
 package com.rpg.api.player;
 
 import com.rpg.application.player.CreatePlayerUseCase;
-import com.rpg.domain.player.PlayerRegistry;
+import com.rpg.infrastructure.player.PlayerRegistry;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
