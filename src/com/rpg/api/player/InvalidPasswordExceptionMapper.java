@@ -11,7 +11,7 @@ public final class InvalidPasswordExceptionMapper implements ExceptionMapper<Inv
     @Override
     public Response toResponse(InvalidPasswordException exception) {
         return Response.status(Response.Status.BAD_REQUEST)
-                .type(MediaType.APPLICATION_JSON)
+                .type(MediaType.TEXT_PLAIN)
                 .entity("{\"error\": \"" + exception.getMessage() + "\"}")
                 .build();
     }

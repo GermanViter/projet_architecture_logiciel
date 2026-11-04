@@ -11,7 +11,7 @@ public final class DuplicatePlayerExceptionMapper implements ExceptionMapper<Dup
     @Override
     public Response toResponse(DuplicatePlayerException exception) {
         return Response.status(Response.Status.CONFLICT)
-                .type(MediaType.APPLICATION_JSON)
+                .type(MediaType.TEXT_PLAIN)
                 .entity("{\"error\": \"" + exception.getMessage() + "\"}")
                 .build();
     }

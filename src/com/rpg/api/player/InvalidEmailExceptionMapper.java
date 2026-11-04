@@ -11,7 +11,7 @@ public final class InvalidEmailExceptionMapper implements ExceptionMapper<Invali
     @Override
     public Response toResponse(InvalidEmailException exception) {
         return Response.status(Response.Status.BAD_REQUEST)
-                .type(MediaType.APPLICATION_JSON)
+                .type(MediaType.TEXT_PLAIN)
                 .entity("{\"error\": \"" + exception.getMessage() + "\"}")
                 .build();
     }

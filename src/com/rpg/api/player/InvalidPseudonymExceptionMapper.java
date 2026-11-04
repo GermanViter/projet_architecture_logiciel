@@ -11,7 +11,7 @@ public final class InvalidPseudonymExceptionMapper implements ExceptionMapper<In
     @Override
     public Response toResponse(InvalidPseudonymException exception) {
         return Response.status(Response.Status.BAD_REQUEST)
-                .type(MediaType.APPLICATION_JSON)
+                .type(MediaType.TEXT_PLAIN)
                 .entity("{\"error\": \"" + exception.getMessage() + "\"}")
                 .build();
     }
