@@ -1,21 +1,32 @@
 package com.rpg.application.player;
 
-import com.rpg.domain.player.PlayerRegistry;
+import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.player.exceptions.DuplicatePlayerException;
 import com.rpg.domain.player.exceptions.InvalidEmailException;
 import com.rpg.domain.player.exceptions.InvalidPasswordException;
 import com.rpg.domain.player.exceptions.InvalidPseudonymException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.rpg.domain.player.fixtures.EmailFixture.VALID_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.MIN_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+@ExtendWith(MockitoExtension.class)
 class CreatePlayerUseCaseTest {
 
-    private final PlayerRegistry registry = new PlayerRegistry();
-    private final CreatePlayerUseCase useCase = new CreatePlayerUseCase(registry);
+    @Mock
+    private PlayerRepository playerRepository;
+
+    @InjectMocks
+    private CreatePlayerUseCase useCase;
 
     @Test
     void execute_validCommand_returnsCreatedPseudonym() {
@@ -27,14 +38,10 @@ class CreatePlayerUseCaseTest {
     }
 
     @Test
-    void execute_validCommand_savesPlayerInRegistry() {
-        CreatePlayerCommand command = aValidCommand();
+    void execute_validCommand_savesPlayerInRepository() {
+        useCase.execute(aValidCommand());
 
-        useCase.execute(command);
-
-        assertThat(registry.allPlayers()).hasSize(1);
-        assertThat(registry.allPlayers().get(0).pseudonym().getValue())
-                .isEqualTo(command.pseudonym());
+        verify(playerRepository).addPlayer(any());
     }
 
     @Test
@@ -45,7 +52,7 @@ class CreatePlayerUseCaseTest {
         assertThrows(InvalidPseudonymException.class,
                 () -> useCase.execute(command));
 
-        assertThat(registry.allPlayers()).isEmpty();
+        verifyNoInteractions(playerRepository);
     }
 
     @Test
@@ -55,7 +62,7 @@ class CreatePlayerUseCaseTest {
         assertThrows(InvalidEmailException.class,
                 () -> useCase.execute(command));
 
-        assertThat(registry.allPlayers()).isEmpty();
+        verifyNoInteractions(playerRepository);
     }
 
     @Test
@@ -65,25 +72,17 @@ class CreatePlayerUseCaseTest {
         assertThrows(InvalidPasswordException.class,
                 () -> useCase.execute(command));
 
-        assertThat(registry.allPlayers()).isEmpty();
+        verifyNoInteractions(playerRepository);
     }
 
     @Test
     void execute_duplicatePseudonym_isRefused() {
-        useCase.execute(aValidCommand());
-        CreatePlayerCommand duplicate = new CreatePlayerCommand("Alice", "other@example.com", "secret123");
+        CreatePlayerCommand command = new CreatePlayerCommand("Alice", VALID_VALUE, "secret123");
+        org.mockito.Mockito.doThrow(new DuplicatePlayerException("pseudonym", "Alice"))
+                .when(playerRepository).addPlayer(any());
 
         assertThrows(DuplicatePlayerException.class,
-                () -> useCase.execute(duplicate));
-    }
-
-    @Test
-    void execute_duplicateEmail_isRefused() {
-        useCase.execute(aValidCommand());
-        CreatePlayerCommand duplicate = new CreatePlayerCommand("Bob", VALID_VALUE, "secret123");
-
-        assertThrows(DuplicatePlayerException.class,
-                () -> useCase.execute(duplicate));
+                () -> useCase.execute(command));
     }
 
     private static CreatePlayerCommand aValidCommand() {

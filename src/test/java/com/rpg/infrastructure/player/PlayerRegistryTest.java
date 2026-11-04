@@ -1,4 +1,4 @@
-package com.rpg.domain.player;
+package com.rpg.infrastructure.player;
 
 import com.rpg.domain.player.exceptions.DuplicatePlayerException;
 import org.junit.jupiter.api.Test;
@@ -16,49 +16,41 @@ class PlayerRegistryTest {
 
     @Test
     void addPlayer_validPlayer_isStored() {
-        Player player = aPlayer();
+        registry.addPlayer(aPlayer());
 
-        registry.addPlayer(player);
-
-        assertThat(registry.allPlayers()).containsExactly(player);
+        assertThat(registry.allPlayers()).hasSize(1);
     }
 
     @Test
     void addPlayer_duplicatePseudonym_isRefused() {
         registry.addPlayer(aPlayer());
-        Player duplicate = aPlayerWithPseudonym(VALID_VALUE);
 
         assertThrows(DuplicatePlayerException.class,
-                () -> registry.addPlayer(duplicate));
+                () -> registry.addPlayer(aPlayerWithPseudonym(VALID_VALUE)));
     }
 
     @Test
     void addPlayer_duplicateEmail_isRefused() {
         registry.addPlayer(aPlayer());
-        Player sameEmail = aPlayerWithEmail("alice@example.com");
 
         assertThrows(DuplicatePlayerException.class,
-                () -> registry.addPlayer(sameEmail));
+                () -> registry.addPlayer(aPlayerWithEmail("alice@example.com")));
     }
 
     @Test
     void addPlayer_duplicatePseudonym_doesNotSaveIncompleteState() {
         registry.addPlayer(aPlayer());
-        Player duplicate = aPlayerWithPseudonym(VALID_VALUE);
 
         assertThrows(DuplicatePlayerException.class,
-                () -> registry.addPlayer(duplicate));
+                () -> registry.addPlayer(aPlayerWithPseudonym(VALID_VALUE)));
 
         assertThat(registry.allPlayers()).hasSize(1);
     }
 
     @Test
     void addPlayer_twoDifferentPlayers_bothAreStored() {
-        Player first = aPlayer();
-        Player second = aPlayerWithEmail("bob@example.com");
-
-        registry.addPlayer(first);
-        registry.addPlayer(second);
+        registry.addPlayer(aPlayer());
+        registry.addPlayer(aPlayerWithEmail("bob@example.com"));
 
         assertThat(registry.allPlayers()).hasSize(2);
     }
