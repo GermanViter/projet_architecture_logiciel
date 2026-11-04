@@ -2,9 +2,10 @@
 
 Turn-based fantasy RPG engine exposed as a REST API (Cégep Marie-Victorin,
 420-310-MV, Epic client: Charles Viau). Java. In-memory storage only — no
-database, no persistence across restarts. Currently at the "domain first"
-stage: no API/HTTP layer, no persistence layer, no tests yet — see
-[Current scope](#current-scope-reminders).
+database, no persistence across restarts. The domain, the API/HTTP layer,
+and unit testing have all been covered in class — see
+[Current scope](#current-scope-reminders) for exactly what's built so far
+and what isn't yet.
 
 ## The single goal of every design decision
 
@@ -217,9 +218,9 @@ When designing or reviewing a class, ask:
 
 ## Reference documents (read on demand, not every turn)
 
-Two files hold bulky reference material pulled out of this file to keep it
-short — read the relevant one whenever a task actually touches that part of
-the project, rather than assuming its content from memory:
+These files hold bulky reference material pulled out of this file to keep
+it short — read the relevant one whenever a task actually touches that
+part of the project, rather than assuming its content from memory:
 
 - **`docs/domain-rules.md`** — the full Epic ruleset: character creation,
   ability scores, species/class tables, equipment, encounters, creatures,
@@ -228,6 +229,13 @@ the project, rather than assuming its content from memory:
 - **`docs/rest-api-guide.md`** — the HTTP/Jersey reference: resource/URI
   conventions, HTTP verbs, status codes, the domain-exception-to-HTTP
   mapping, Jersey annotations and code patterns, pagination, HATEOAS.
+- **`docs/unit-testing-guide.md`** — the unit testing reference: Given/
+  When/Then, boundary testing, fixtures, injecting the clock (and the
+  same technique for dice, per the determinism requirement), mocking a
+  use case's ports with Mockito, command builders, FIRST, and the PR
+  checklist for new domain code. Read this before writing or reviewing
+  any test, and alongside any new domain code that should ship with
+  tests.
 
 ---
 
@@ -287,24 +295,30 @@ the project, rather than assuming its content from memory:
 
 ## Current scope reminders
 
-- **No tests yet** (not covered in class) — don't add a test framework
-  unprompted.
-- **The API/HTTP layer is now in scope** (see `docs/rest-api-guide.md`) —
-  this followed the
-  domain-first work: identity, name and its rules, six ability scores and
-  modifiers, species/class bonuses, HP, mana, level/XP, a clear creation
-  strategy (e.g. a `HeroFactory`), inventory and its capacity, weapons,
-  armor, potions, equip rules. Exact URIs/resources beyond what's sketched
-  above (`Using the API`) are still to be designed by the team — don't
-  assume a shape that hasn't been agreed on. Persistence (a real database),
-  the full lobby/game loop, and the combat engine's turn system may still
-  be ahead depending on where the team actually is — check before
-  assuming they're in scope.
+- **Unit testing is now in scope** (see `docs/unit-testing-guide.md`) —
+  new domain code should come with tests: Given/When/Then, a boundary
+  test on every limit (just-below and at-the-limit), a fixture per domain
+  object, no magic values, a `Clock`/`DiceRoller` injected rather than
+  called live, and a use case's ports (repositories, gateways) mocked
+  while its own domain objects stay real. Don't add an end-to-end or
+  integration test framework unprompted — that's a later topic.
+- **The API/HTTP layer is in scope** (see `docs/rest-api-guide.md`) — this
+  followed the domain-first work: identity, name and its rules, six
+  ability scores and modifiers, species/class bonuses, HP, mana, level/XP,
+  a clear creation strategy (e.g. a `HeroFactory`), inventory and its
+  capacity, weapons, armor, potions, equip rules. Exact URIs/resources
+  beyond what's sketched above (`Using the API`) are still to be designed
+  by the team — don't assume a shape that hasn't been agreed on.
+  Persistence (a real database), the full lobby/game loop, and the combat
+  engine's turn system may still be ahead depending on where the team
+  actually is — check before assuming they're in scope.
 - Be ready to explain, for whatever's built so far: which classes are
   Entities vs. Value Objects, which rules are invariants and where they're
   enforced, how the boundary between `Hero`, `Inventory`, and `Equipment`
   was drawn, where an interface/composition/Factory was used to limit the
-  spread of change, and — once the api layer exists — why each DTO,
-  mapper, and `ExceptionMapper` lives where it does.
+  spread of change, why each DTO, mapper, and `ExceptionMapper` lives
+  where it does, and — for any tested class — why its tests are shaped
+  the way they are (which boundary each one checks, why a given port is
+  mocked and a given object isn't).
 - Fill in `java-conventions/SKILL.md` and `architecture-decisions/SKILL.md`
   placeholders once the team agrees on naming/package structure.
