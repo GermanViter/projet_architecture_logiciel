@@ -1,0 +1,36 @@
+package com.rpg.api.player;
+
+import com.rpg.application.player.CreatePlayerCommand;
+import com.rpg.application.player.CreatePlayerOutput;
+import com.rpg.application.player.CreatePlayerUseCase;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+
+@Path("/players")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public final class PlayerResource {
+    private final CreatePlayerUseCase createPlayer;
+
+    public PlayerResource(CreatePlayerUseCase createPlayer) {
+        this.createPlayer = createPlayer;
+    }
+
+    @POST
+    public Response createPlayer(@Valid CreatePlayerRequest request) {
+        CreatePlayerOutput output = createPlayer.execute(
+                new CreatePlayerCommand(request.pseudonym, request.email, request.password));
+
+        return Response
+                .created(UriBuilder.fromResource(PlayerResource.class)
+                        .path(output.pseudonym())
+                        .build())
+                .build();
+    }
+}

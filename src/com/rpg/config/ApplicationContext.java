@@ -1,5 +1,7 @@
 package com.rpg.config;
 
+import com.rpg.api.FallbackExceptionMapper;
+import com.rpg.api.player.PlayerInstaller;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
@@ -26,7 +28,8 @@ public final class ApplicationContext {
 
         // Une installation par fonctionnalité. L'ORDRE compte : le module réservation a besoin de
         // l'API publique du module restaurant, qui doit donc exister avant.
-        // TODO: Register domain resources and installers here.
+        new PlayerInstaller().install(resourceConfig);
+        resourceConfig.register(new FallbackExceptionMapper());
 
         return resourceConfig;
     }
