@@ -1,7 +1,7 @@
 package com.rpg;
 import java.net.URI;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import restalo.config.ApplicationContext;
+import com.rpg.config.ApplicationContext;
 
 /**
  * DÉMARRAGE — point d'entrée du programme.
