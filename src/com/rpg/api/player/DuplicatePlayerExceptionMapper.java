@@ -1,6 +1,6 @@
 package com.rpg.api.player;
 
-import com.rpg.domain.player.DuplicatePlayerException;
+import com.rpg.domain.player.exceptions.DuplicatePlayerException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

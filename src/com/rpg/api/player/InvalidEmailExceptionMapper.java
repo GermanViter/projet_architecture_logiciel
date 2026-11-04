@@ -1,6 +1,6 @@
 package com.rpg.api.player;
 
-import com.rpg.domain.player.InvalidEmailException;
+import com.rpg.domain.player.exceptions.InvalidEmailException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

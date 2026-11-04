@@ -1,5 +1,7 @@
 package com.rpg.domain.player;
 
+import com.rpg.domain.player.exceptions.DuplicatePlayerException;
+
 import java.util.ArrayList;
 import java.util.List;
 

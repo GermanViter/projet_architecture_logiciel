@@ -1,4 +1,4 @@
-package com.rpg.domain.player;
+package com.rpg.domain.player.exceptions;
 
 public class InvalidPasswordException extends RuntimeException {
     public InvalidPasswordException() {

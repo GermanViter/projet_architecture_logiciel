@@ -1,6 +1,6 @@
 package com.rpg.api.player;
 
-import com.rpg.domain.player.InvalidPseudonymException;
+import com.rpg.domain.player.exceptions.InvalidPseudonymException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

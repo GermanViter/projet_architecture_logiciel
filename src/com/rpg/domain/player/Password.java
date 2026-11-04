@@ -1,5 +1,7 @@
 package com.rpg.domain.player;
 
+import com.rpg.domain.player.exceptions.InvalidPasswordException;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -1,5 +1,7 @@
 package com.rpg.domain.player;
 
+import com.rpg.domain.player.exceptions.InvalidPseudonymException;
+
 import java.util.Objects;
 
 public final class Pseudonym {

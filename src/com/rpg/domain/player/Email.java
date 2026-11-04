@@ -1,5 +1,7 @@
 package com.rpg.domain.player;
 
+import com.rpg.domain.player.exceptions.InvalidEmailException;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
