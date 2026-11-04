@@ -78,6 +78,7 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src</sourceDirectory>
         <!--
             On FIXE la version de chaque plugin Maven utilisé par le cycle de vie
             (clean, compile, test, package, install).
@@ -131,7 +132,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <mainClass>restalo.Main</mainClass>
+                    <mainClass>com.rpg.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
