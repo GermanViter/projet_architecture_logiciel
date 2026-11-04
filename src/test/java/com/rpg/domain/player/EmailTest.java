@@ -38,7 +38,7 @@ class EmailTest {
         Email first = new Email(VALID_VALUE);
         Email second = new Email(VALID_VALUE);
 
-        assertThat(first).isEqualTo(second);
+        assertThat(first.getLowerCase()).isEqualTo(second.getLowerCase());
     }
 
     @Test

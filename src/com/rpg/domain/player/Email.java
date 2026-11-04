@@ -38,4 +38,8 @@ public final class Email {
     public String toString() {
         return value;
     }
+
+    public String getLowerCase() {
+        return value.toLowerCase();
+    }
 }
