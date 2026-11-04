@@ -2,6 +2,7 @@ package com.rpg.api.player;
 
 import com.rpg.application.player.CreatePlayerUseCase;
 import com.rpg.domain.player.PlayerRegistry;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 public final class PlayerInstaller {
@@ -9,7 +10,13 @@ public final class PlayerInstaller {
         PlayerRegistry playerRegistry = new PlayerRegistry();
         CreatePlayerUseCase createPlayer = new CreatePlayerUseCase(playerRegistry);
 
-        config.register(new PlayerResource(createPlayer));
+        config.register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(createPlayer).to(CreatePlayerUseCase.class);
+            }
+        });
+        config.register(PlayerResource.class);
         config.register(new DuplicatePlayerExceptionMapper());
         config.register(new InvalidPseudonymExceptionMapper());
         config.register(new InvalidEmailExceptionMapper());

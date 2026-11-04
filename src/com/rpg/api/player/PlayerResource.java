@@ -3,6 +3,7 @@ package com.rpg.api.player;
 import com.rpg.application.player.CreatePlayerCommand;
 import com.rpg.application.player.CreatePlayerOutput;
 import com.rpg.application.player.CreatePlayerUseCase;
+import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -18,6 +19,7 @@ import jakarta.ws.rs.core.UriBuilder;
 public final class PlayerResource {
     private final CreatePlayerUseCase createPlayer;
 
+    @Inject
     public PlayerResource(CreatePlayerUseCase createPlayer) {
         this.createPlayer = createPlayer;
     }
