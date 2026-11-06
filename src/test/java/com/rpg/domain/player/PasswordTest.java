@@ -50,4 +50,26 @@ class PasswordTest {
 
         assertThat(first.getHash()).isEqualTo(second.getHash());
     }
+
+    @Test
+    void verify_correctPlaintext_returnsTrue() {
+        Password password = new Password(VALID_VALUE);
+
+        assertThat(password.verify(VALID_VALUE)).isTrue();
+    }
+
+    @Test
+    void verify_wrongPlaintext_returnsFalse() {
+        Password password = new Password(VALID_VALUE);
+
+        assertThat(password.verify("wrongpassword")).isFalse();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void verify_null_returnsFalse(String nullValue) {
+        Password password = new Password(VALID_VALUE);
+
+        assertThat(password.verify(nullValue)).isFalse();
+    }
 }
