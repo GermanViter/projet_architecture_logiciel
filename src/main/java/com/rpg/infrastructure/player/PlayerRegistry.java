@@ -8,6 +8,7 @@ import com.rpg.domain.player.exceptions.DuplicatePlayerException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class PlayerRegistry implements PlayerRepository {
     private final List<Player> players = new ArrayList<>();
@@ -29,6 +30,11 @@ public final class PlayerRegistry implements PlayerRepository {
 
     private boolean emailAlreadyExists(Email email) {
         return players.stream().anyMatch(p -> p.email().equals(email));
+    }
+
+    @Override
+    public Optional<Player> findByEmail(Email email) {
+        return players.stream().filter(p -> p.email().equals(email)).findFirst();
     }
 
     public List<Player> allPlayers() {
