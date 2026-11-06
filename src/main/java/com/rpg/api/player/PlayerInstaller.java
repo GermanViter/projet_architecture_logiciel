@@ -6,8 +6,13 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 public final class PlayerInstaller {
+    private final PlayerRegistry playerRegistry;
+
+    public PlayerInstaller(PlayerRegistry playerRegistry) {
+        this.playerRegistry = playerRegistry;
+    }
+
     public void install(ResourceConfig config) {
-        PlayerRegistry playerRegistry = new PlayerRegistry();
         CreatePlayerUseCase createPlayer = new CreatePlayerUseCase(playerRegistry);
 
         config.register(new AbstractBinder() {
