@@ -54,4 +54,20 @@ class PlayerRegistryTest {
 
         assertThat(registry.allPlayers()).hasSize(2);
     }
+
+    @Test
+    void findByEmail_existingEmail_returnsPlayer() {
+        registry.addPlayer(aPlayer());
+
+        var result = registry.findByEmail(new com.rpg.domain.player.Email("alice@example.com"));
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void findByEmail_unknownEmail_returnsEmpty() {
+        var result = registry.findByEmail(new com.rpg.domain.player.Email("unknown@example.com"));
+
+        assertThat(result).isEmpty();
+    }
 }

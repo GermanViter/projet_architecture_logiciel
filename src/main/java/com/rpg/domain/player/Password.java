@@ -29,6 +29,12 @@ public final class Password {
         }
     }
 
+    // ponytail: no salt — BCrypt/Argon2 with per-user salt if real security is needed
+    public boolean verify(String plaintext) {
+        if (plaintext == null) return false;
+        return this.hash.equals(sha256(plaintext));
+    }
+
     public String getHash() {
         return hash;
     }
