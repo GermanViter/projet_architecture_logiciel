@@ -1,6 +1,7 @@
 package com.rpg.config;
 
 import com.rpg.api.FallbackExceptionMapper;
+import com.rpg.api.lobby.LobbyInstaller;
 import com.rpg.api.player.PlayerInstaller;
 import com.rpg.api.session.SessionInstaller;
 import com.rpg.infrastructure.player.PlayerRegistry;
@@ -35,6 +36,7 @@ public final class ApplicationContext {
         new PlayerInstaller(playerRegistry).install(resourceConfig);
         SessionRegistry sessionRegistry = new SessionRegistry();
         new SessionInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
+        new LobbyInstaller(sessionRegistry, playerRegistry).install(resourceConfig);
         resourceConfig.register(new FallbackExceptionMapper());
 
         return resourceConfig;

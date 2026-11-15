@@ -26,5 +26,6 @@ public final class SessionInstaller {
         });
         config.register(SessionResource.class);
         config.register(new InvalidCredentialsExceptionMapper());
+        config.register(new InvalidSessionExceptionMapper());
     }
 }
