@@ -4,6 +4,7 @@ import com.rpg.api.FallbackExceptionMapper;
 import com.rpg.api.player.PlayerInstaller;
 import com.rpg.api.session.SessionInstaller;
 import com.rpg.infrastructure.player.PlayerRegistry;
+import com.rpg.infrastructure.session.SessionRegistry;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
@@ -32,7 +33,8 @@ public final class ApplicationContext {
         // l'API publique du module restaurant, qui doit donc exister avant.
         PlayerRegistry playerRegistry = new PlayerRegistry();
         new PlayerInstaller(playerRegistry).install(resourceConfig);
-        new SessionInstaller(playerRegistry).install(resourceConfig);
+        SessionRegistry sessionRegistry = new SessionRegistry();
+        new SessionInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
         resourceConfig.register(new FallbackExceptionMapper());
 
         return resourceConfig;
