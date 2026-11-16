@@ -2,6 +2,7 @@ package com.rpg.domain.lobby;
 
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
+import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +11,7 @@ import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyWithMembers;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.aThirdPseudonym;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -94,5 +96,55 @@ class LobbyTest {
         lobby.join(anotherPseudonym());
 
         assertThrows(PlayerAlreadyMemberException.class, () -> lobby.join(anotherPseudonym()));
+    }
+
+    @Test
+    void leave_member_isNoLongerAMember() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+
+        lobby.leave(anotherPseudonym());
+
+        assertThat(lobby.members()).containsExactly(aPseudonym());
+    }
+
+    @Test
+    void leave_member_freesOneSeat() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+        int seatsBefore = lobby.availableSeats();
+
+        lobby.leave(anotherPseudonym());
+
+        assertThat(lobby.availableSeats()).isEqualTo(seatsBefore + 1);
+    }
+
+    @Test
+    void leave_hostOfThreePlayers_makesTheSecondArrivedTheHost() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+        lobby.join(aThirdPseudonym());
+
+        lobby.leave(aPseudonym());
+
+        assertThat(lobby.host()).isEqualTo(anotherPseudonym());
+    }
+
+    @Test
+    void leave_lastMember_leavesTheLobbyEmpty() {
+        Lobby lobby = aLobby();
+
+        lobby.leave(aPseudonym());
+
+        assertThat(lobby.isEmpty()).isTrue();
+    }
+
+    @Test
+    void leave_nonMember_isRefusedAndMembersStayTheSame() {
+        Lobby lobby = aLobby();
+
+        assertThrows(PlayerNotInLobbyException.class, () -> lobby.leave(anotherPseudonym()));
+
+        assertThat(lobby.members()).containsExactly(aPseudonym());
     }
 }
