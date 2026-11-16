@@ -1,6 +1,7 @@
 package com.rpg.api.lobby;
 
 import com.rpg.application.lobby.CreateLobbyUseCase;
+import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.infrastructure.lobby.LobbyRegistry;
@@ -18,7 +19,8 @@ public final class LobbyInstaller {
 
     public void install(ResourceConfig config) {
         LobbyRegistry lobbyRegistry = new LobbyRegistry();
-        CreateLobbyUseCase createLobby = new CreateLobbyUseCase(sessions, players, lobbyRegistry);
+        ConnectedPlayerFinder connectedPlayers = new ConnectedPlayerFinder(sessions, players);
+        CreateLobbyUseCase createLobby = new CreateLobbyUseCase(connectedPlayers, lobbyRegistry);
 
         config.register(new AbstractBinder() {
             @Override

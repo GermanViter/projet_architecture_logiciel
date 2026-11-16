@@ -1,5 +1,6 @@
 package com.rpg.application.lobby;
 
+import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
@@ -7,10 +8,10 @@ import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.domain.session.SessionToken;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,8 +42,12 @@ class CreateLobbyUseCaseTest {
     @Mock
     private LobbyRepository lobbies;
 
-    @InjectMocks
     private CreateLobbyUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new CreateLobbyUseCase(new ConnectedPlayerFinder(sessions, players), lobbies);
+    }
 
     @Test
     void execute_connectedPlayer_returnsLobbyHostedByThatPlayer() {
