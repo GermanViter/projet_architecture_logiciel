@@ -43,7 +43,7 @@ class LobbyRegistryTest {
     @Test
     void addLobby_differentHosts_areBothStored() {
         registry.addLobby(aLobby());
-        registry.addLobby(aLobbyHostedBy("Bob"));
+        registry.addLobby(aLobbyHostedBy(OTHER_VALUE));
 
         assertThat(registry.allLobbies()).hasSize(2);
     }

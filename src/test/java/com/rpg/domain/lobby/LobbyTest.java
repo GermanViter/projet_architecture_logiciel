@@ -3,7 +3,6 @@ package com.rpg.domain.lobby;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
-import com.rpg.domain.player.Pseudonym;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -45,7 +44,7 @@ class LobbyTest {
 
     @Test
     void hasMember_anotherPlayer_isFalse() {
-        assertThat(aLobby().hasMember(new Pseudonym("Bob"))).isFalse();
+        assertThat(aLobby().hasMember(anotherPseudonym())).isFalse();
     }
 
     @Test
