@@ -15,8 +15,7 @@ public final class PlayerNotInLobbyExceptionMapper
     public Response toResponse(PlayerNotInLobbyException exception) {
         return Response.status(Response.Status.NOT_FOUND)
                 .type(MediaType.APPLICATION_JSON)
-                .entity(new ErrorResponse("PLAYER_NOT_IN_LOBBY",
-                        "Ce joueur n'est pas membre de ce lobby."))
+                .entity(new ErrorResponse(exception.code(), exception.getMessage()))
                 .build();
     }
 }

@@ -15,8 +15,7 @@ public final class CannotRemoveAnotherPlayerExceptionMapper
     public Response toResponse(CannotRemoveAnotherPlayerException exception) {
         return Response.status(Response.Status.FORBIDDEN)
                 .type(MediaType.APPLICATION_JSON)
-                .entity(new ErrorResponse("FORBIDDEN",
-                        "Vous ne pouvez retirer que vous-même d'un lobby."))
+                .entity(new ErrorResponse(exception.code(), exception.getMessage()))
                 .build();
     }
 }

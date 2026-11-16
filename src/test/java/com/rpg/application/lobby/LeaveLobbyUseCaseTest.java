@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.UNKNOWN_LOBBY_ID;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyHostedBy;
 import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
@@ -29,6 +30,7 @@ import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
+import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -38,8 +40,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LeaveLobbyUseCaseTest {
-    private static final String TOKEN = "a-valid-token";
-    private static final String UNKNOWN_LOBBY_ID = "an-unknown-lobby";
     private static final String PLAYER_ID_TOO_SHORT_FOR_A_PSEUDONYM =
             VALID_VALUE.substring(0, MIN_LENGTH - 1);
 
@@ -118,7 +118,7 @@ class LeaveLobbyUseCaseTest {
         when(lobbies.findById(LobbyId.of(UNKNOWN_LOBBY_ID))).thenReturn(Optional.empty());
 
         assertThrows(LobbyNotFoundException.class,
-                () -> useCase.execute(new LeaveLobbyCommand(TOKEN, UNKNOWN_LOBBY_ID, VALID_VALUE)));
+                () -> useCase.execute(new LeaveLobbyCommand(VALID_TOKEN, UNKNOWN_LOBBY_ID, VALID_VALUE)));
     }
 
     @Test
@@ -142,7 +142,7 @@ class LeaveLobbyUseCaseTest {
     }
 
     private void whenTokenBelongsToAPlayer() {
-        when(sessions.findEmailByToken(SessionToken.of(TOKEN))).thenReturn(Optional.of(anEmail()));
+        when(sessions.findEmailByToken(SessionToken.of(VALID_TOKEN))).thenReturn(Optional.of(anEmail()));
         when(players.findByEmail(anEmail())).thenReturn(Optional.of(aPlayer()));
     }
 
@@ -157,6 +157,6 @@ class LeaveLobbyUseCaseTest {
     }
 
     private static LeaveLobbyCommand leaveCommand(Lobby lobby, String playerId) {
-        return new LeaveLobbyCommand(TOKEN, lobby.id().getValue(), playerId);
+        return new LeaveLobbyCommand(VALID_TOKEN, lobby.id().getValue(), playerId);
     }
 }
