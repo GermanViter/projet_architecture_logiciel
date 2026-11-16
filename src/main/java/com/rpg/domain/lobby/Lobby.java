@@ -7,14 +7,15 @@ import java.util.List;
 
 public final class Lobby {
     private final LobbyId id;
+    private final Pseudonym host;
     private final List<Pseudonym> members = new ArrayList<>();
 
     private Lobby(LobbyId id, Pseudonym host) {
         this.id = id;
+        this.host = host;
         this.members.add(host);
     }
 
-    /** The creator becomes the host and the first member of the lobby. */
     public static Lobby openedBy(Pseudonym host) {
         return new Lobby(LobbyId.generate(), host);
     }
@@ -24,7 +25,7 @@ public final class Lobby {
     }
 
     public Pseudonym host() {
-        return members.get(0);
+        return host;
     }
 
     public boolean hasMember(Pseudonym pseudonym) {
