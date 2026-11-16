@@ -36,7 +36,7 @@ public final class ApplicationContext {
         new PlayerInstaller(playerRegistry).install(resourceConfig);
         SessionRegistry sessionRegistry = new SessionRegistry();
         new SessionInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
-        new LobbyInstaller(sessionRegistry, playerRegistry).install(resourceConfig);
+        new LobbyInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
         resourceConfig.register(new FallbackExceptionMapper());
 
         return resourceConfig;

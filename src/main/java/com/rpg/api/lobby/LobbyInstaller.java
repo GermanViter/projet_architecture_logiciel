@@ -8,12 +8,12 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 public final class LobbyInstaller {
-    private final SessionRepository sessions;
     private final PlayerRepository players;
+    private final SessionRepository sessions;
 
-    public LobbyInstaller(SessionRepository sessions, PlayerRepository players) {
-        this.sessions = sessions;
+    public LobbyInstaller(PlayerRepository players, SessionRepository sessions) {
         this.players = players;
+        this.sessions = sessions;
     }
 
     public void install(ResourceConfig config) {
