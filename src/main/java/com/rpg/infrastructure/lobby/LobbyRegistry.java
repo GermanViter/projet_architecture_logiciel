@@ -22,6 +22,11 @@ public final class LobbyRegistry implements LobbyRepository {
     }
 
     @Override
+    public synchronized void removeLobby(Lobby lobby) {
+        lobbies.remove(lobby);
+    }
+
+    @Override
     public synchronized Optional<Lobby> findById(LobbyId id) {
         return lobbies.stream().filter(lobby -> lobby.id().equals(id)).findFirst();
     }

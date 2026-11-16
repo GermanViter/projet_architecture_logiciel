@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface LobbyRepository {
     void addLobby(Lobby lobby);
+    void removeLobby(Lobby lobby);
     Optional<Lobby> findById(LobbyId id);
     boolean hasLobbyWithMember(Pseudonym player);
 }
