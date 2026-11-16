@@ -15,7 +15,7 @@ public final class LobbyNotFoundExceptionMapper
     public Response toResponse(LobbyNotFoundException exception) {
         return Response.status(Response.Status.NOT_FOUND)
                 .type(MediaType.APPLICATION_JSON)
-                .entity(new ErrorResponse("LOBBY_NOT_FOUND", "Ce lobby n'existe pas."))
+                .entity(new ErrorResponse(exception.code(), exception.getMessage()))
                 .build();
     }
 }

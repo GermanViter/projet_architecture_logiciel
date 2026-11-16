@@ -1,7 +1,7 @@
 package com.rpg.domain.lobby.exceptions;
 
-public final class LobbyFullException extends RuntimeException {
+public final class LobbyFullException extends LobbyException {
     public LobbyFullException() {
-        super("Lobby is full.");
+        super("LOBBY_FULL", "Le lobby est plein.");
     }
 }

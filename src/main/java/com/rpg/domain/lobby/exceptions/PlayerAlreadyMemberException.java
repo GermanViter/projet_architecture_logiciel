@@ -1,7 +1,7 @@
 package com.rpg.domain.lobby.exceptions;
 
-public final class PlayerAlreadyMemberException extends RuntimeException {
+public final class PlayerAlreadyMemberException extends LobbyException {
     public PlayerAlreadyMemberException() {
-        super("Player is already a member of this lobby.");
+        super("ALREADY_MEMBER", "Vous êtes déjà membre de ce lobby.");
     }
 }
