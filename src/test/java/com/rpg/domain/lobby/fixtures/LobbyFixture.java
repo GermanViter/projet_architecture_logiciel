@@ -6,6 +6,7 @@ import com.rpg.domain.player.fixtures.PseudonymFixture;
 
 public final class LobbyFixture {
     public static final int MAX_PLAYERS = 4;
+    public static final String UNKNOWN_LOBBY_ID = "an-unknown-lobby";
     private static final String GUEST_PSEUDONYM_PREFIX = "Guest";
 
     private LobbyFixture() {}

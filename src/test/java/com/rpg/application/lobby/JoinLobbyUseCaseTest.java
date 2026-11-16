@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.UNKNOWN_LOBBY_ID;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyHostedBy;
 import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
@@ -29,6 +30,7 @@ import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
+import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -36,8 +38,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class JoinLobbyUseCaseTest {
-    private static final String TOKEN = "a-valid-token";
-    private static final String UNKNOWN_LOBBY_ID = "an-unknown-lobby";
     private static final int MEMBERS_AFTER_JOIN = 2;
 
     @Mock
@@ -89,7 +89,7 @@ class JoinLobbyUseCaseTest {
         when(lobbies.findById(LobbyId.of(UNKNOWN_LOBBY_ID))).thenReturn(Optional.empty());
 
         assertThrows(LobbyNotFoundException.class,
-                () -> useCase.execute(new JoinLobbyCommand(TOKEN, UNKNOWN_LOBBY_ID)));
+                () -> useCase.execute(new JoinLobbyCommand(VALID_TOKEN, UNKNOWN_LOBBY_ID)));
     }
 
     @Test
@@ -126,7 +126,7 @@ class JoinLobbyUseCaseTest {
     }
 
     private void whenTokenBelongsToAPlayer() {
-        when(sessions.findEmailByToken(SessionToken.of(TOKEN))).thenReturn(Optional.of(anEmail()));
+        when(sessions.findEmailByToken(SessionToken.of(VALID_TOKEN))).thenReturn(Optional.of(anEmail()));
         when(players.findByEmail(anEmail())).thenReturn(Optional.of(aPlayer()));
     }
 
@@ -135,6 +135,6 @@ class JoinLobbyUseCaseTest {
     }
 
     private static JoinLobbyCommand joinCommandFor(Lobby lobby) {
-        return new JoinLobbyCommand(TOKEN, lobby.id().getValue());
+        return new JoinLobbyCommand(VALID_TOKEN, lobby.id().getValue());
     }
 }
