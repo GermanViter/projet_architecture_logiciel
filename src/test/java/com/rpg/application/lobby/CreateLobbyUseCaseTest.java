@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
 import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
@@ -52,10 +53,12 @@ class CreateLobbyUseCaseTest {
     void execute_connectedPlayer_returnsLobbyHostedByThatPlayer() {
         whenTokenBelongsToAPlayer();
 
-        CreateLobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
+        LobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
-        assertThat(output.hostPseudonym()).isEqualTo(VALID_VALUE);
-        assertThat(output.lobbyId()).isNotEmpty();
+        assertThat(output.hostId()).isEqualTo(VALID_VALUE);
+        assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE));
+        assertThat(output.availableSeats()).isEqualTo(MAX_PLAYERS - 1);
+        assertThat(output.id()).isNotEmpty();
     }
 
     @Test

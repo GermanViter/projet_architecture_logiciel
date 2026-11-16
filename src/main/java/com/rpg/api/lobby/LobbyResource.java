@@ -1,13 +1,13 @@
 package com.rpg.api.lobby;
 
 import com.rpg.application.lobby.CreateLobbyCommand;
-import com.rpg.application.lobby.CreateLobbyOutput;
 import com.rpg.application.lobby.CreateLobbyUseCase;
 import com.rpg.application.lobby.JoinLobbyCommand;
 import com.rpg.application.lobby.JoinLobbyOutput;
 import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyCommand;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
+import com.rpg.application.lobby.LobbyOutput;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -42,13 +42,14 @@ public final class LobbyResource {
 
     @POST
     public Response createLobby(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
-        CreateLobbyOutput output =
+        LobbyOutput output =
                 createLobby.execute(new CreateLobbyCommand(extractBearerToken(authorization)));
 
         return Response
                 .created(UriBuilder.fromResource(LobbyResource.class)
-                        .path(output.lobbyId())
+                        .path(output.id())
                         .build())
+                .entity(output)
                 .build();
     }
 
