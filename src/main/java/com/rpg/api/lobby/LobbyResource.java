@@ -58,7 +58,7 @@ public final class LobbyResource {
                         .path(LOBBY_PLAYERS_PATH)
                         .path(PLAYER_ID_PATH)
                         .build(output.lobby().id(), output.playerId()))
-                .entity(LobbyResponse.from(output.lobby()))
+                .entity(output.lobby())
                 .build();
     }
 
