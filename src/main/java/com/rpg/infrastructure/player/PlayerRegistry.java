@@ -40,9 +40,4 @@ public final class PlayerRegistry implements PlayerRepository {
     public List<Player> allPlayers() {
         return new ArrayList<>(players);
     }
-    @Override
-    public boolean exists(Pseudonym pseudonym) {
-        return players.stream()
-                .anyMatch(player -> player.pseudonym().equals(pseudonym));
-    }
 }
