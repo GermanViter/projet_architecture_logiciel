@@ -2,20 +2,21 @@ package com.rpg.api.session;
 
 import com.rpg.application.session.LoginUseCase;
 import com.rpg.domain.player.PlayerRepository;
-import com.rpg.infrastructure.session.SessionRegistry;
+import com.rpg.domain.session.SessionRepository;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 public final class SessionInstaller {
     private final PlayerRepository players;
+    private final SessionRepository sessions;
 
-    public SessionInstaller(PlayerRepository players) {
+    public SessionInstaller(PlayerRepository players, SessionRepository sessions) {
         this.players = players;
+        this.sessions = sessions;
     }
 
     public void install(ResourceConfig config) {
-        SessionRegistry sessionRegistry = new SessionRegistry();
-        LoginUseCase login = new LoginUseCase(players, sessionRegistry);
+        LoginUseCase login = new LoginUseCase(players, sessions);
 
         config.register(new AbstractBinder() {
             @Override
@@ -25,5 +26,6 @@ public final class SessionInstaller {
         });
         config.register(SessionResource.class);
         config.register(new InvalidCredentialsExceptionMapper());
+        config.register(new InvalidSessionExceptionMapper());
     }
 }

@@ -1,0 +1,109 @@
+package com.rpg.application.lobby;
+
+import com.rpg.domain.lobby.Lobby;
+import com.rpg.domain.lobby.LobbyRepository;
+import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
+import com.rpg.domain.player.PlayerRepository;
+import com.rpg.domain.session.SessionRepository;
+import com.rpg.domain.session.SessionToken;
+import com.rpg.domain.session.exceptions.InvalidSessionException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
+import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class CreateLobbyUseCaseTest {
+    private static final String TOKEN = "a-valid-token";
+
+    @Mock
+    private SessionRepository sessions;
+
+    @Mock
+    private PlayerRepository players;
+
+    @Mock
+    private LobbyRepository lobbies;
+
+    @InjectMocks
+    private CreateLobbyUseCase useCase;
+
+    @Test
+    void execute_connectedPlayer_returnsLobbyHostedByThatPlayer() {
+        whenTokenBelongsToAPlayer();
+
+        CreateLobbyOutput output = useCase.execute(new CreateLobbyCommand(TOKEN));
+
+        assertThat(output.hostPseudonym()).isEqualTo(VALID_VALUE);
+        assertThat(output.lobbyId()).isNotEmpty();
+    }
+
+    @Test
+    void execute_connectedPlayer_savesLobbyWithPlayerAsHostAndFirstMember() {
+        whenTokenBelongsToAPlayer();
+
+        useCase.execute(new CreateLobbyCommand(TOKEN));
+
+        ArgumentCaptor<Lobby> saved = ArgumentCaptor.forClass(Lobby.class);
+        verify(lobbies).addLobby(saved.capture());
+        assertThat(saved.getValue().host()).isEqualTo(aPseudonym());
+        assertThat(saved.getValue().members()).containsExactly(aPseudonym());
+    }
+
+    @Test
+    void execute_unknownToken_isRefusedAndNothingIsSaved() {
+        when(sessions.findEmailByToken(any())).thenReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class,
+                () -> useCase.execute(new CreateLobbyCommand(TOKEN)));
+
+        verifyNoInteractions(lobbies);
+    }
+
+    @Test
+    void execute_missingToken_isRefusedAndNothingIsSaved() {
+        assertThrows(InvalidSessionException.class,
+                () -> useCase.execute(new CreateLobbyCommand(null)));
+
+        verifyNoInteractions(sessions, players, lobbies);
+    }
+
+    @Test
+    void execute_tokenOfADeletedPlayer_isRefused() {
+        when(sessions.findEmailByToken(SessionToken.of(TOKEN))).thenReturn(Optional.of(anEmail()));
+        when(players.findByEmail(anEmail())).thenReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class,
+                () -> useCase.execute(new CreateLobbyCommand(TOKEN)));
+    }
+
+    @Test
+    void execute_playerAlreadyInAnOpenLobby_isRefused() {
+        whenTokenBelongsToAPlayer();
+        doThrow(new PlayerAlreadyInLobbyException()).when(lobbies).addLobby(any());
+
+        assertThrows(PlayerAlreadyInLobbyException.class,
+                () -> useCase.execute(new CreateLobbyCommand(TOKEN)));
+    }
+
+    private void whenTokenBelongsToAPlayer() {
+        when(sessions.findEmailByToken(SessionToken.of(TOKEN))).thenReturn(Optional.of(anEmail()));
+        when(players.findByEmail(anEmail())).thenReturn(Optional.of(aPlayer()));
+    }
+}
