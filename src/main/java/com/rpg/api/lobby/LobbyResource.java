@@ -3,11 +3,15 @@ package com.rpg.api.lobby;
 import com.rpg.application.lobby.CreateLobbyCommand;
 import com.rpg.application.lobby.CreateLobbyOutput;
 import com.rpg.application.lobby.CreateLobbyUseCase;
+import com.rpg.application.lobby.JoinLobbyCommand;
+import com.rpg.application.lobby.JoinLobbyOutput;
+import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -18,12 +22,16 @@ import jakarta.ws.rs.core.UriBuilder;
 @Produces(MediaType.APPLICATION_JSON)
 public final class LobbyResource {
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String LOBBY_PLAYERS_PATH = "{lobbyId}/players";
+    private static final String PLAYER_ID_PATH = "{playerId}";
 
     private final CreateLobbyUseCase createLobby;
+    private final JoinLobbyUseCase joinLobby;
 
     @Inject
-    public LobbyResource(CreateLobbyUseCase createLobby) {
+    public LobbyResource(CreateLobbyUseCase createLobby, JoinLobbyUseCase joinLobby) {
         this.createLobby = createLobby;
+        this.joinLobby = joinLobby;
     }
 
     @POST
@@ -35,6 +43,22 @@ public final class LobbyResource {
                 .created(UriBuilder.fromResource(LobbyResource.class)
                         .path(output.lobbyId())
                         .build())
+                .build();
+    }
+
+    @POST
+    @Path(LOBBY_PLAYERS_PATH)
+    public Response joinLobby(@PathParam("lobbyId") String lobbyId,
+                              @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
+        JoinLobbyOutput output =
+                joinLobby.execute(new JoinLobbyCommand(extractBearerToken(authorization), lobbyId));
+
+        return Response
+                .created(UriBuilder.fromResource(LobbyResource.class)
+                        .path(LOBBY_PLAYERS_PATH)
+                        .path(PLAYER_ID_PATH)
+                        .build(output.lobby().id(), output.playerId()))
+                .entity(LobbyResponse.from(output.lobby()))
                 .build();
     }
 
