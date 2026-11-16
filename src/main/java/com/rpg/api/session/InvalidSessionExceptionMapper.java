@@ -1,5 +1,6 @@
 package com.rpg.api.session;
 
+import com.rpg.api.ErrorResponse;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -14,7 +15,7 @@ public final class InvalidSessionExceptionMapper
     public Response toResponse(InvalidSessionException exception) {
         return Response.status(Response.Status.UNAUTHORIZED)
                 .type(MediaType.APPLICATION_JSON)
-                .entity("{\"error\": \"INVALID_SESSION\"}")
+                .entity(new ErrorResponse("NOT_AUTHENTICATED", exception.getMessage()))
                 .build();
     }
 }

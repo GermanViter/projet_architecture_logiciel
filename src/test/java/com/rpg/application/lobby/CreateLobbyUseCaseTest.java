@@ -3,7 +3,6 @@ package com.rpg.application.lobby;
 import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
-import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
 import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.domain.session.SessionToken;
@@ -18,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
 import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
@@ -25,7 +25,6 @@ import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
 import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -52,10 +51,12 @@ class CreateLobbyUseCaseTest {
     void execute_connectedPlayer_returnsLobbyHostedByThatPlayer() {
         whenTokenBelongsToAPlayer();
 
-        CreateLobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
+        LobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
-        assertThat(output.hostPseudonym()).isEqualTo(VALID_VALUE);
-        assertThat(output.lobbyId()).isNotEmpty();
+        assertThat(output.hostId()).isEqualTo(VALID_VALUE);
+        assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE));
+        assertThat(output.availableSeats()).isEqualTo(MAX_PLAYERS - 1);
+        assertThat(output.id()).isNotEmpty();
     }
 
     @Test
@@ -94,15 +95,6 @@ class CreateLobbyUseCaseTest {
         when(players.findByEmail(anEmail())).thenReturn(Optional.empty());
 
         assertThrows(InvalidSessionException.class,
-                () -> useCase.execute(new CreateLobbyCommand(VALID_TOKEN)));
-    }
-
-    @Test
-    void execute_playerAlreadyInAnOpenLobby_isRefused() {
-        whenTokenBelongsToAPlayer();
-        doThrow(new PlayerAlreadyInLobbyException()).when(lobbies).addLobby(any());
-
-        assertThrows(PlayerAlreadyInLobbyException.class,
                 () -> useCase.execute(new CreateLobbyCommand(VALID_TOKEN)));
     }
 

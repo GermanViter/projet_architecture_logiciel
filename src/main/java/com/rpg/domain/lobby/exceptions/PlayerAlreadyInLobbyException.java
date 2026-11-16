@@ -1,7 +1,7 @@
 package com.rpg.domain.lobby.exceptions;
 
-public final class PlayerAlreadyInLobbyException extends RuntimeException {
+public final class PlayerAlreadyInLobbyException extends LobbyException {
     public PlayerAlreadyInLobbyException() {
-        super("Player is already in an open lobby.");
+        super("ALREADY_IN_LOBBY", "Player is already in an open lobby.");
     }
 }

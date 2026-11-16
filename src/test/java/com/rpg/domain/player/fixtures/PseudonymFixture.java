@@ -7,6 +7,7 @@ public final class PseudonymFixture {
     public static final int MAX_LENGTH = 20;
     public static final String VALID_VALUE = "Alice";
     public static final String OTHER_VALUE = "Bob";
+    public static final String THIRD_VALUE = "Carol";
 
     private PseudonymFixture() {}
 
@@ -16,5 +17,9 @@ public final class PseudonymFixture {
 
     public static Pseudonym anotherPseudonym() {
         return new Pseudonym(OTHER_VALUE);
+    }
+
+    public static Pseudonym aThirdPseudonym() {
+        return new Pseudonym(THIRD_VALUE);
     }
 }

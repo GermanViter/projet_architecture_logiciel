@@ -2,6 +2,7 @@ package com.rpg.domain.lobby;
 
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
+import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
 
 import java.util.ArrayList;
@@ -11,12 +12,10 @@ public final class Lobby {
     private static final int MAX_PLAYERS = 4;
 
     private final LobbyId id;
-    private final Pseudonym host;
     private final List<Pseudonym> members = new ArrayList<>();
 
     private Lobby(LobbyId id, Pseudonym host) {
         this.id = id;
-        this.host = host;
         this.members.add(host);
     }
 
@@ -28,8 +27,8 @@ public final class Lobby {
         return id;
     }
 
-    public Pseudonym host() {
-        return host;
+    public synchronized Pseudonym host() {
+        return members.getFirst();
     }
 
     public synchronized void join(Pseudonym player) {
@@ -42,8 +41,18 @@ public final class Lobby {
         members.add(player);
     }
 
+    public synchronized void leave(Pseudonym player) {
+        if (!members.remove(player)) {
+            throw new PlayerNotInLobbyException();
+        }
+    }
+
     public synchronized boolean hasMember(Pseudonym pseudonym) {
         return members.contains(pseudonym);
+    }
+
+    public synchronized boolean isEmpty() {
+        return members.isEmpty();
     }
 
     public synchronized List<Pseudonym> members() {

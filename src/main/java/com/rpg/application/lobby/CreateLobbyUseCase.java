@@ -14,12 +14,12 @@ public final class CreateLobbyUseCase {
         this.lobbies = lobbies;
     }
 
-    public CreateLobbyOutput execute(CreateLobbyCommand command) {
+    public LobbyOutput execute(CreateLobbyCommand command) {
         Player host = connectedPlayers.find(command.token());
 
         Lobby lobby = Lobby.openedBy(host.pseudonym());
         lobbies.addLobby(lobby);
 
-        return new CreateLobbyOutput(lobby.id().getValue(), host.pseudonym().getValue());
+        return LobbyOutput.from(lobby);
     }
 }
