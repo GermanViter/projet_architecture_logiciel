@@ -35,7 +35,6 @@ public final class LobbyInstaller {
             }
         });
         config.register(LobbyResource.class);
-        config.register(new PlayerAlreadyInLobbyExceptionMapper());
         config.register(new LobbyNotFoundExceptionMapper());
         config.register(new LobbyExceptionMapper());
         config.register(new CannotRemoveAnotherPlayerExceptionMapper());
