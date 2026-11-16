@@ -1,11 +1,14 @@
 package com.rpg.infrastructure.lobby;
 
+import com.rpg.domain.lobby.Lobby;
+import com.rpg.domain.lobby.LobbyId;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyHostedBy;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LobbyRegistryTest {
@@ -41,5 +44,36 @@ class LobbyRegistryTest {
         registry.addLobby(aLobbyHostedBy("Bob"));
 
         assertThat(registry.allLobbies()).hasSize(2);
+    }
+
+    @Test
+    void findById_idRebuiltFromItsValue_returnsTheLobby() {
+        Lobby lobby = aLobby();
+        registry.addLobby(lobby);
+
+        assertThat(registry.findById(LobbyId.of(lobby.id().getValue()))).hasValue(lobby);
+    }
+
+    @Test
+    void findById_unknownId_returnsEmpty() {
+        registry.addLobby(aLobby());
+
+        assertThat(registry.findById(LobbyId.generate())).isEmpty();
+    }
+
+    @Test
+    void hasLobbyWithMember_playerWhoJoinedAStoredLobby_isTrue() {
+        Lobby lobby = aLobby();
+        registry.addLobby(lobby);
+        lobby.join(anotherPseudonym());
+
+        assertThat(registry.hasLobbyWithMember(anotherPseudonym())).isTrue();
+    }
+
+    @Test
+    void hasLobbyWithMember_playerInNoLobby_isFalse() {
+        registry.addLobby(aLobby());
+
+        assertThat(registry.hasLobbyWithMember(anotherPseudonym())).isFalse();
     }
 }
