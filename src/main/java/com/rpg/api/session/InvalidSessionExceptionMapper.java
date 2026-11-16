@@ -14,7 +14,7 @@ public final class InvalidSessionExceptionMapper
     public Response toResponse(InvalidSessionException exception) {
         return Response.status(Response.Status.UNAUTHORIZED)
                 .type(MediaType.APPLICATION_JSON)
-                .entity("{\"error\": \"" + exception.getMessage() + "\"}")
+                .entity("{\"error\": \"INVALID_SESSION\"}")
                 .build();
     }
 }
