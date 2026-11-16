@@ -1,11 +1,17 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.lobby.exceptions.LobbyFullException;
+import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.player.Pseudonym;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyWithMembers;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LobbyTest {
 
@@ -24,6 +30,13 @@ class LobbyTest {
     }
 
     @Test
+    void openedBy_player_leavesEverySeatButTheHostsAvailable() {
+        Lobby lobby = Lobby.openedBy(aPseudonym());
+
+        assertThat(lobby.availableSeats()).isEqualTo(MAX_PLAYERS - 1);
+    }
+
+    @Test
     void hasMember_host_isTrue() {
         assertThat(aLobby().hasMember(aPseudonym())).isTrue();
     }
@@ -36,5 +49,50 @@ class LobbyTest {
     @Test
     void openedBy_twice_givesDistinctIds() {
         assertThat(aLobby().id()).isNotEqualTo(aLobby().id());
+    }
+
+    @Test
+    void join_newPlayer_becomesAMember() {
+        Lobby lobby = aLobby();
+
+        lobby.join(anotherPseudonym());
+
+        assertThat(lobby.members()).containsExactly(aPseudonym(), anotherPseudonym()).inOrder();
+    }
+
+    @Test
+    void join_newPlayer_takesOneAvailableSeat() {
+        Lobby lobby = aLobby();
+        int seatsBefore = lobby.availableSeats();
+
+        lobby.join(anotherPseudonym());
+
+        assertThat(lobby.availableSeats()).isEqualTo(seatsBefore - 1);
+    }
+
+    @Test
+    void join_lastAvailableSeat_isAccepted() {
+        Lobby lobby = aLobbyWithMembers(MAX_PLAYERS - 1);
+
+        lobby.join(anotherPseudonym());
+
+        assertThat(lobby.members()).hasSize(MAX_PLAYERS);
+    }
+
+    @Test
+    void join_fullLobby_isRefusedAndStaysAtMaxPlayers() {
+        Lobby lobby = aLobbyWithMembers(MAX_PLAYERS);
+
+        assertThrows(LobbyFullException.class, () -> lobby.join(anotherPseudonym()));
+
+        assertThat(lobby.members()).hasSize(MAX_PLAYERS);
+    }
+
+    @Test
+    void join_playerAlreadyMember_isRefused() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+
+        assertThrows(PlayerAlreadyMemberException.class, () -> lobby.join(anotherPseudonym()));
     }
 }

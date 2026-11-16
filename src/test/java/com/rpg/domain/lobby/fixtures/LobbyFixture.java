@@ -5,6 +5,10 @@ import com.rpg.domain.player.Pseudonym;
 import com.rpg.domain.player.fixtures.PseudonymFixture;
 
 public final class LobbyFixture {
+    public static final int MAX_PLAYERS = 4;
+    public static final String UNKNOWN_LOBBY_ID = "an-unknown-lobby";
+    private static final String GUEST_PSEUDONYM_PREFIX = "Guest";
+
     private LobbyFixture() {}
 
     public static Lobby aLobby() {
@@ -13,5 +17,13 @@ public final class LobbyFixture {
 
     public static Lobby aLobbyHostedBy(String pseudonym) {
         return Lobby.openedBy(new Pseudonym(pseudonym));
+    }
+
+    public static Lobby aLobbyWithMembers(int memberCount) {
+        Lobby lobby = aLobby();
+        for (int guest = 1; guest < memberCount; guest++) {
+            lobby.join(new Pseudonym(GUEST_PSEUDONYM_PREFIX + guest));
+        }
+        return lobby;
     }
 }

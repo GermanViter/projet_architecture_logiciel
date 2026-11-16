@@ -1,5 +1,6 @@
 package com.rpg.application.lobby;
 
+import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
@@ -7,10 +8,10 @@ import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.domain.session.SessionToken;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -21,6 +22,7 @@ import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
+import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -30,8 +32,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateLobbyUseCaseTest {
-    private static final String TOKEN = "a-valid-token";
-
     @Mock
     private SessionRepository sessions;
 
@@ -41,14 +41,18 @@ class CreateLobbyUseCaseTest {
     @Mock
     private LobbyRepository lobbies;
 
-    @InjectMocks
     private CreateLobbyUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new CreateLobbyUseCase(new ConnectedPlayerFinder(sessions, players), lobbies);
+    }
 
     @Test
     void execute_connectedPlayer_returnsLobbyHostedByThatPlayer() {
         whenTokenBelongsToAPlayer();
 
-        CreateLobbyOutput output = useCase.execute(new CreateLobbyCommand(TOKEN));
+        CreateLobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
         assertThat(output.hostPseudonym()).isEqualTo(VALID_VALUE);
         assertThat(output.lobbyId()).isNotEmpty();
@@ -58,7 +62,7 @@ class CreateLobbyUseCaseTest {
     void execute_connectedPlayer_savesLobbyWithPlayerAsHostAndFirstMember() {
         whenTokenBelongsToAPlayer();
 
-        useCase.execute(new CreateLobbyCommand(TOKEN));
+        useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
         ArgumentCaptor<Lobby> saved = ArgumentCaptor.forClass(Lobby.class);
         verify(lobbies).addLobby(saved.capture());
@@ -71,7 +75,7 @@ class CreateLobbyUseCaseTest {
         when(sessions.findEmailByToken(any())).thenReturn(Optional.empty());
 
         assertThrows(InvalidSessionException.class,
-                () -> useCase.execute(new CreateLobbyCommand(TOKEN)));
+                () -> useCase.execute(new CreateLobbyCommand(VALID_TOKEN)));
 
         verifyNoInteractions(lobbies);
     }
@@ -86,11 +90,11 @@ class CreateLobbyUseCaseTest {
 
     @Test
     void execute_tokenOfADeletedPlayer_isRefused() {
-        when(sessions.findEmailByToken(SessionToken.of(TOKEN))).thenReturn(Optional.of(anEmail()));
+        when(sessions.findEmailByToken(SessionToken.of(VALID_TOKEN))).thenReturn(Optional.of(anEmail()));
         when(players.findByEmail(anEmail())).thenReturn(Optional.empty());
 
         assertThrows(InvalidSessionException.class,
-                () -> useCase.execute(new CreateLobbyCommand(TOKEN)));
+                () -> useCase.execute(new CreateLobbyCommand(VALID_TOKEN)));
     }
 
     @Test
@@ -99,11 +103,11 @@ class CreateLobbyUseCaseTest {
         doThrow(new PlayerAlreadyInLobbyException()).when(lobbies).addLobby(any());
 
         assertThrows(PlayerAlreadyInLobbyException.class,
-                () -> useCase.execute(new CreateLobbyCommand(TOKEN)));
+                () -> useCase.execute(new CreateLobbyCommand(VALID_TOKEN)));
     }
 
     private void whenTokenBelongsToAPlayer() {
-        when(sessions.findEmailByToken(SessionToken.of(TOKEN))).thenReturn(Optional.of(anEmail()));
+        when(sessions.findEmailByToken(SessionToken.of(VALID_TOKEN))).thenReturn(Optional.of(anEmail()));
         when(players.findByEmail(anEmail())).thenReturn(Optional.of(aPlayer()));
     }
 }
