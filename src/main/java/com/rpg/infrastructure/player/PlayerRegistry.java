@@ -14,7 +14,7 @@ public final class PlayerRegistry implements PlayerRepository {
     private final List<Player> players = new ArrayList<>();
 
     @Override
-    public void addPlayer(Player player) {
+    public synchronized void addPlayer(Player player) {
         if (pseudonymAlreadyExists(player.pseudonym())) {
             throw new DuplicatePlayerException("pseudonym", player.pseudonym().getValue());
         }
@@ -33,11 +33,11 @@ public final class PlayerRegistry implements PlayerRepository {
     }
 
     @Override
-    public Optional<Player> findByEmail(Email email) {
+    public synchronized Optional<Player> findByEmail(Email email) {
         return players.stream().filter(p -> p.email().equals(email)).findFirst();
     }
 
-    public List<Player> allPlayers() {
+    public synchronized List<Player> allPlayers() {
         return new ArrayList<>(players);
     }
 }
