@@ -1,28 +1,32 @@
 package com.rpg.application.player;
 
-import com.rpg.domain.player.Email;
+import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.player.Player;
 import com.rpg.domain.player.PlayerRepository;
+import com.rpg.domain.player.exceptions.CannotViewAnotherPlayerProfileException;
+import com.rpg.domain.player.exceptions.PlayerNotFoundException;
 
 public final class GetPlayerProfileUseCase {
-    private final PlayerRepository repository;
+    private final ConnectedPlayerFinder connectedPlayers;
+    private final PlayerRepository players;
 
-    public GetPlayerProfileUseCase(PlayerRepository repository) {
-        this.repository = repository;
+    public GetPlayerProfileUseCase(ConnectedPlayerFinder connectedPlayers, PlayerRepository players) {
+        this.connectedPlayers = connectedPlayers;
+        this.players = players;
     }
 
-    public PlayerProfileOutput execute(String playerId, Email authenticatedUserEmail) {
-        Player player = repository.findById(playerId)
-            .orElseThrow(() -> new com.rpg.domain.player.exceptions.PlayerNotFoundException(playerId));
+    public PlayerProfileOutput execute(GetPlayerProfileCommand command) {
+        Player requester = connectedPlayers.find(command.token());
+        Player player = players.findById(command.playerId())
+                .orElseThrow(PlayerNotFoundException::new);
+        ensureViewsOwnProfile(requester, player);
 
-        if (!player.email().equals(authenticatedUserEmail)) {
-            throw new com.rpg.domain.player.exceptions.ForbiddenException();
+        return PlayerProfileOutput.from(player);
+    }
+
+    private static void ensureViewsOwnProfile(Player requester, Player player) {
+        if (!requester.pseudonym().equals(player.pseudonym())) {
+            throw new CannotViewAnotherPlayerProfileException();
         }
-
-        return new PlayerProfileOutput(
-            playerId,
-            player.pseudonym().value(),
-            player.email().value()
-        );
     }
 }
