@@ -37,6 +37,11 @@ public final class PlayerRegistry implements PlayerRepository {
         return players.stream().filter(p -> p.email().equals(email)).findFirst();
     }
 
+    @Override
+    public synchronized Optional<Player> findById(String playerId) {
+        return players.stream().filter(p -> p.pseudonym().getValue().equals(playerId)).findFirst();
+    }
+
     public synchronized List<Player> allPlayers() {
         return new ArrayList<>(players);
     }
