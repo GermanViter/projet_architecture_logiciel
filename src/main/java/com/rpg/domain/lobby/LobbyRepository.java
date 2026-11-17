@@ -9,4 +9,5 @@ public interface LobbyRepository {
     void removeLobby(Lobby lobby);
     Optional<Lobby> findById(LobbyId id);
     boolean hasLobbyWithMember(Pseudonym player);
+    void save(Lobby lobby);
 }

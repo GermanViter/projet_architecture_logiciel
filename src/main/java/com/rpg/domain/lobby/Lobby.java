@@ -1,18 +1,28 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.hero.Hero;
+import com.rpg.domain.lobby.exceptions.GameAlreadyStartedException;
+import com.rpg.domain.lobby.exceptions.HeroAlreadySelectedException;
+import com.rpg.domain.lobby.exceptions.HeroAlreadyTakenException;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public final class Lobby {
     private static final int MAX_PLAYERS = 4;
 
     private final LobbyId id;
     private final List<Pseudonym> members = new ArrayList<>();
+    private final Map<Pseudonym, Hero> selectedHeroes = new HashMap<>();
+    private final List<Hero> availableHeroes = new ArrayList<>();
+    private boolean started = false;
 
     private Lobby(LobbyId id, Pseudonym host) {
         this.id = id;
@@ -61,5 +71,49 @@ public final class Lobby {
 
     public synchronized int availableSeats() {
         return MAX_PLAYERS - members.size();
+    }
+
+    public synchronized void addAvailableHero(Hero hero) {
+        availableHeroes.add(hero);
+    }
+
+    public synchronized void selectHero(Pseudonym player, Hero hero) {
+        if (started) {
+            throw new GameAlreadyStartedException();
+        }
+        if (!members.contains(player)) {
+            throw new PlayerNotInLobbyException();
+        }
+        if (selectedHeroes.containsKey(player)) {
+            throw new HeroAlreadySelectedException();
+        }
+        if (isHeroTaken(hero)) {
+            throw new HeroAlreadyTakenException();
+        }
+        selectedHeroes.put(player, hero);
+    }
+
+    public synchronized Optional<Hero> getSelectedHero(Pseudonym player) {
+        return Optional.ofNullable(selectedHeroes.get(player));
+    }
+
+    public synchronized List<Hero> getAvailableHeroes() {
+        return List.copyOf(availableHeroes);
+    }
+
+    public synchronized boolean isStarted() {
+        return started;
+    }
+
+    public synchronized void startGame() {
+        started = true;
+    }
+
+    private boolean isHeroTaken(Hero hero) {
+        return selectedHeroes.containsValue(hero);
+    }
+
+    public synchronized void clearHeroSelection(Pseudonym player) {
+        selectedHeroes.remove(player);
     }
 }

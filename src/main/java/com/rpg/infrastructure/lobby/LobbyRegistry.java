@@ -36,6 +36,11 @@ public final class LobbyRegistry implements LobbyRepository {
         return lobbies.stream().anyMatch(existing -> existing.hasMember(player));
     }
 
+    @Override
+    public synchronized void save(Lobby lobby) {
+        // In-memory registry: the lobby object is already stored, no need to persist
+    }
+
     public synchronized List<Lobby> allLobbies() {
         return new ArrayList<>(lobbies);
     }

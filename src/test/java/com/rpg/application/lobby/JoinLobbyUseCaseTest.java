@@ -78,8 +78,8 @@ class JoinLobbyUseCaseTest {
         assertThat(output).isEqualTo(new JoinLobbyOutput(VALID_VALUE, new LobbyOutput(
                 lobbyHostedByAnotherPlayer.id().getValue(),
                 OTHER_VALUE,
-                List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE),
-                        new LobbyMemberOutput(VALID_VALUE, VALID_VALUE)),
+                List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE, Optional.empty()),
+                        new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, Optional.empty())),
                 MAX_PLAYERS - MEMBERS_AFTER_JOIN)));
     }
 

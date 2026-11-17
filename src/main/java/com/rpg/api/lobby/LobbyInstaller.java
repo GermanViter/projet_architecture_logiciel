@@ -3,7 +3,9 @@ package com.rpg.api.lobby;
 import com.rpg.application.lobby.CreateLobbyUseCase;
 import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
+import com.rpg.application.lobby.SelectHeroUseCase;
 import com.rpg.application.session.ConnectedPlayerFinder;
+import com.rpg.domain.hero.HeroRegistry;
 import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.infrastructure.lobby.LobbyRegistry;
@@ -21,10 +23,12 @@ public final class LobbyInstaller {
 
     public void install(ResourceConfig config) {
         LobbyRegistry lobbyRegistry = new LobbyRegistry();
+        HeroRegistry heroRegistry = new HeroRegistry();
         ConnectedPlayerFinder connectedPlayers = new ConnectedPlayerFinder(sessions, players);
         CreateLobbyUseCase createLobby = new CreateLobbyUseCase(connectedPlayers, lobbyRegistry);
         JoinLobbyUseCase joinLobby = new JoinLobbyUseCase(connectedPlayers, lobbyRegistry);
         LeaveLobbyUseCase leaveLobby = new LeaveLobbyUseCase(connectedPlayers, lobbyRegistry);
+        SelectHeroUseCase selectHero = new SelectHeroUseCase(connectedPlayers, lobbyRegistry, heroRegistry);
 
         config.register(new AbstractBinder() {
             @Override
@@ -32,6 +36,7 @@ public final class LobbyInstaller {
                 bind(createLobby).to(CreateLobbyUseCase.class);
                 bind(joinLobby).to(JoinLobbyUseCase.class);
                 bind(leaveLobby).to(LeaveLobbyUseCase.class);
+                bind(selectHero).to(SelectHeroUseCase.class);
             }
         });
         config.register(LobbyResource.class);

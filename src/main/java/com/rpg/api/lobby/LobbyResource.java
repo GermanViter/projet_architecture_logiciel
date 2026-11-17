@@ -8,10 +8,14 @@ import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyCommand;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
 import com.rpg.application.lobby.LobbyOutput;
+import com.rpg.application.lobby.SelectHeroCommand;
+import com.rpg.application.lobby.SelectHeroUseCase;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -27,17 +31,20 @@ public final class LobbyResource {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String LOBBY_PLAYERS_PATH = "{lobbyId}/players";
     private static final String PLAYER_ID_PATH = "{playerId}";
+    private static final String HERO_PATH = "hero";
 
     private final CreateLobbyUseCase createLobby;
     private final JoinLobbyUseCase joinLobby;
     private final LeaveLobbyUseCase leaveLobby;
+    private final SelectHeroUseCase selectHero;
 
     @Inject
     public LobbyResource(CreateLobbyUseCase createLobby, JoinLobbyUseCase joinLobby,
-                         LeaveLobbyUseCase leaveLobby) {
+                         LeaveLobbyUseCase leaveLobby, SelectHeroUseCase selectHero) {
         this.createLobby = createLobby;
         this.joinLobby = joinLobby;
         this.leaveLobby = leaveLobby;
+        this.selectHero = selectHero;
     }
 
     @POST
@@ -78,6 +85,19 @@ public final class LobbyResource {
                 new LeaveLobbyCommand(extractBearerToken(authorization), lobbyId, playerId));
 
         return Response.noContent().build();
+    }
+
+    @PUT
+    @Path(LOBBY_PLAYERS_PATH + "/" + PLAYER_ID_PATH + "/" + HERO_PATH)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response selectHero(@PathParam("lobbyId") String lobbyId,
+                               @PathParam("playerId") String playerId,
+                               SelectHeroRequest request,
+                               @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
+        LobbyOutput output = selectHero.execute(new SelectHeroCommand(
+                extractBearerToken(authorization), lobbyId, playerId, request.heroName()));
+
+        return Response.ok().entity(output).build();
     }
 
     private static String extractBearerToken(String authorization) {
