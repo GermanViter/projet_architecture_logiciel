@@ -4,6 +4,7 @@ import com.rpg.domain.player.Email;
 import com.rpg.domain.player.Password;
 import com.rpg.domain.player.Player;
 import com.rpg.domain.player.PlayerRepository;
+import com.rpg.domain.player.Pseudonym;
 import com.rpg.domain.player.exceptions.ForbiddenException;
 import com.rpg.domain.player.exceptions.PlayerNotFoundException;
 import org.junit.jupiter.api.Test;
