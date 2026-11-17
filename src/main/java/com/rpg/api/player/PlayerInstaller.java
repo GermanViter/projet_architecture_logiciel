@@ -2,15 +2,17 @@ package com.rpg.api.player;
 
 import com.rpg.application.player.CreatePlayerUseCase;
 import com.rpg.application.player.GetPlayerProfileUseCase;
-import com.rpg.infrastructure.player.PlayerRegistry;
+import com.rpg.domain.session.SessionRepository;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 public final class PlayerInstaller {
     private final PlayerRegistry playerRegistry;
+    private final SessionRepository sessionRepository;
 
-    public PlayerInstaller(PlayerRegistry playerRegistry) {
+    public PlayerInstaller(PlayerRegistry playerRegistry, SessionRepository sessionRepository) {
         this.playerRegistry = playerRegistry;
+        this.sessionRepository = sessionRepository;
     }
 
     public void install(ResourceConfig config) {

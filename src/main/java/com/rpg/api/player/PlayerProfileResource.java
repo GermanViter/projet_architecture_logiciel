@@ -2,6 +2,8 @@ package com.rpg.api.player;
 
 import com.rpg.application.player.GetPlayerProfileUseCase;
 import com.rpg.domain.player.Email;
+import com.rpg.domain.session.SessionRepository;
+import com.rpg.domain.session.SessionToken;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -9,9 +11,11 @@ import jakarta.ws.rs.core.Response;
 @Path("/players")
 public final class PlayerProfileResource {
     private final GetPlayerProfileUseCase getPlayerProfileUseCase;
+    private final SessionRepository sessionRepository;
 
-    public PlayerProfileResource(GetPlayerProfileUseCase getPlayerProfileUseCase) {
+    public PlayerProfileResource(GetPlayerProfileUseCase getPlayerProfileUseCase, SessionRepository sessionRepository) {
         this.getPlayerProfileUseCase = getPlayerProfileUseCase;
+        this.sessionRepository = sessionRepository;
     }
 
     @GET
@@ -24,10 +28,13 @@ public final class PlayerProfileResource {
                     .build();
         }
 
-        // In a real production app, we'd validate and extract the email from the token.
-        // For this exercise, we'll use a mock email.
-        Email email = new Email("mock@mail.com");
+        String tokenValue = auth.substring(7);
+        SessionToken token = SessionToken.of(tokenValue);
 
-        return Response.ok(getPlayerProfileUseCase.execute(playerId, email)).build();
+        return sessionRepository.findEmailByToken(token)
+                .map(email -> Response.ok(getPlayerProfileUseCase.execute(playerId, email)).build())
+                .orElse(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("{\"error\": \"INVALID_SESSION\"}")
+                        .build());
     }
 }
