@@ -8,6 +8,8 @@ import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyCommand;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
 import com.rpg.application.lobby.LobbyOutput;
+import com.rpg.application.lobby.StartGameCommand;
+import com.rpg.application.lobby.StartGameUseCase;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -28,16 +30,20 @@ public final class LobbyResource {
     private static final String LOBBY_PLAYERS_PATH = "{lobbyId}/players";
     private static final String PLAYER_ID_PATH = "{playerId}";
 
+    private static final String GAME_PATH = "{lobbyId}/game";
+
     private final CreateLobbyUseCase createLobby;
     private final JoinLobbyUseCase joinLobby;
     private final LeaveLobbyUseCase leaveLobby;
+    private final StartGameUseCase startGame;
 
     @Inject
     public LobbyResource(CreateLobbyUseCase createLobby, JoinLobbyUseCase joinLobby,
-                         LeaveLobbyUseCase leaveLobby) {
+                         LeaveLobbyUseCase leaveLobby, StartGameUseCase startGame) {
         this.createLobby = createLobby;
         this.joinLobby = joinLobby;
         this.leaveLobby = leaveLobby;
+        this.startGame = startGame;
     }
 
     @POST
@@ -78,6 +84,16 @@ public final class LobbyResource {
                 new LeaveLobbyCommand(extractBearerToken(authorization), lobbyId, playerId));
 
         return Response.noContent().build();
+    }
+
+    @POST
+    @Path(GAME_PATH)
+    public Response startGame(@PathParam("lobbyId") String lobbyId,
+                              @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
+        LobbyOutput output = startGame.execute(
+                new StartGameCommand(extractBearerToken(authorization), lobbyId));
+
+        return Response.ok().entity(output).build();
     }
 
     private static String extractBearerToken(String authorization) {

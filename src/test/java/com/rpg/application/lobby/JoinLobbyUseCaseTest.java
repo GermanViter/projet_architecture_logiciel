@@ -80,7 +80,8 @@ class JoinLobbyUseCaseTest {
                 OTHER_VALUE,
                 List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE),
                         new LobbyMemberOutput(VALID_VALUE, VALID_VALUE)),
-                MAX_PLAYERS - MEMBERS_AFTER_JOIN)));
+                MAX_PLAYERS - MEMBERS_AFTER_JOIN,
+                false)));
     }
 
     @Test

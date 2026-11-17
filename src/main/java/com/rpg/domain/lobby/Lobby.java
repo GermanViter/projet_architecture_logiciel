@@ -1,6 +1,9 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.lobby.exceptions.GameAlreadyStartedException;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
+import com.rpg.domain.lobby.exceptions.NotEnoughPlayersException;
+import com.rpg.domain.lobby.exceptions.NotHostException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
@@ -9,10 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Lobby {
-    private static final int MAX_PLAYERS = 4;
+    static final int MIN_PLAYERS = 1;
+    static final int MAX_PLAYERS = 4;
 
     private final LobbyId id;
     private final List<Pseudonym> members = new ArrayList<>();
+    private boolean started = false;
 
     private Lobby(LobbyId id, Pseudonym host) {
         this.id = id;
@@ -61,5 +66,26 @@ public final class Lobby {
 
     public synchronized int availableSeats() {
         return MAX_PLAYERS - members.size();
+    }
+
+    public synchronized boolean isStarted() {
+        return started;
+    }
+
+    public synchronized void startGame(Pseudonym requester) {
+        if (started) {
+            throw new GameAlreadyStartedException();
+        }
+        if (!host().equals(requester)) {
+            throw new NotHostException();
+        }
+        int playerCount = members.size();
+        if (playerCount < MIN_PLAYERS) {
+            throw new NotEnoughPlayersException();
+        }
+        if (playerCount > MAX_PLAYERS) {
+            throw new NotEnoughPlayersException();
+        }
+        started = true;
     }
 }
