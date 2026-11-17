@@ -1,7 +1,7 @@
 package com.rpg.domain.player.exceptions;
 
-public class PlayerNotFoundException extends PlayerException {
-    public PlayerNotFoundException(String playerId) {
-        super("PLAYER_NOT_FOUND", "Player with ID " + playerId + " was not found.");
+public final class PlayerNotFoundException extends PlayerException {
+    public PlayerNotFoundException() {
+        super("PLAYER_NOT_FOUND", "This player does not exist.");
     }
 }
