@@ -3,12 +3,16 @@ package com.rpg.api.lobby;
 import com.rpg.api.BearerToken;
 import com.rpg.application.lobby.CreateLobbyCommand;
 import com.rpg.application.lobby.CreateLobbyUseCase;
+import com.rpg.application.lobby.GetLobbyDetailsOutput;
+import com.rpg.application.lobby.GetLobbyDetailsUseCase;
 import com.rpg.application.lobby.JoinLobbyCommand;
 import com.rpg.application.lobby.JoinLobbyOutput;
 import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyCommand;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
-import com.rpg.application.lobby.LobbyOutput;
+import com.rpg.application.lobby.ListLobbiesOutput;
+import com.rpg.application.lobby.ListLobbiesUseCase;
+import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.HeaderParam;
@@ -30,13 +34,18 @@ public final class LobbyResource {
     private final CreateLobbyUseCase createLobby;
     private final JoinLobbyUseCase joinLobby;
     private final LeaveLobbyUseCase leaveLobby;
+    private final ListLobbiesUseCase listLobbies;
+    private final GetLobbyDetailsUseCase getLobbyDetails;
 
     @Inject
     public LobbyResource(CreateLobbyUseCase createLobby, JoinLobbyUseCase joinLobby,
-                         LeaveLobbyUseCase leaveLobby) {
+                         LeaveLobbyUseCase leaveLobby, ListLobbiesUseCase listLobbies,
+                         GetLobbyDetailsUseCase getLobbyDetails) {
         this.createLobby = createLobby;
         this.joinLobby = joinLobby;
         this.leaveLobby = leaveLobby;
+        this.listLobbies = listLobbies;
+        this.getLobbyDetails = getLobbyDetails;
     }
 
     @POST
@@ -77,5 +86,24 @@ public final class LobbyResource {
                 new LeaveLobbyCommand(BearerToken.extractFrom(authorization), lobbyId, playerId));
 
         return Response.noContent().build();
+    }
+
+    @GET
+    public Response listLobbies() {
+        ListLobbiesOutput output = listLobbies.execute();
+        return Response.ok(output).build();
+    }
+
+    @GET
+    @Path("{lobbyId}")
+    public Response getLobbyDetails(@PathParam("lobbyId") String lobbyId) {
+        try {
+            GetLobbyDetailsOutput output = getLobbyDetails.execute(lobbyId);
+            return Response.ok(output).build();
+        } catch (LobbyNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new com.rpg.api.ErrorResponse(ex.code(), ex.getMessage()))
+                    .build();
+        }
     }
 }
