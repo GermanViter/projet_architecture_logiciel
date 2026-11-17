@@ -33,8 +33,8 @@ public final class ApplicationContext {
         // Une installation par fonctionnalité. L'ORDRE compte : le module réservation a besoin de
         // l'API publique du module restaurant, qui doit donc exister avant.
         PlayerRegistry playerRegistry = new PlayerRegistry();
-        new PlayerInstaller(playerRegistry).install(resourceConfig);
         SessionRegistry sessionRegistry = new SessionRegistry();
+        new PlayerInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
         new SessionInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
         new LobbyInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
         resourceConfig.register(new FallbackExceptionMapper());

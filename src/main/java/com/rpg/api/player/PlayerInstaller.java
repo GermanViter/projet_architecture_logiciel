@@ -2,22 +2,25 @@ package com.rpg.api.player;
 
 import com.rpg.application.player.CreatePlayerUseCase;
 import com.rpg.application.player.GetPlayerProfileUseCase;
+import com.rpg.application.session.ConnectedPlayerFinder;
+import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 public final class PlayerInstaller {
-    private final PlayerRegistry playerRegistry;
-    private final SessionRepository sessionRepository;
+    private final PlayerRepository players;
+    private final SessionRepository sessions;
 
-    public PlayerInstaller(PlayerRegistry playerRegistry, SessionRepository sessionRepository) {
-        this.playerRegistry = playerRegistry;
-        this.sessionRepository = sessionRepository;
+    public PlayerInstaller(PlayerRepository players, SessionRepository sessions) {
+        this.players = players;
+        this.sessions = sessions;
     }
 
     public void install(ResourceConfig config) {
-        CreatePlayerUseCase createPlayer = new CreatePlayerUseCase(playerRegistry);
-        GetPlayerProfileUseCase getPlayerProfile = new GetPlayerProfileUseCase(playerRegistry);
+        ConnectedPlayerFinder connectedPlayers = new ConnectedPlayerFinder(sessions, players);
+        CreatePlayerUseCase createPlayer = new CreatePlayerUseCase(players);
+        GetPlayerProfileUseCase getPlayerProfile = new GetPlayerProfileUseCase(connectedPlayers, players);
 
         config.register(new AbstractBinder() {
             @Override
@@ -31,7 +34,7 @@ public final class PlayerInstaller {
         config.register(new InvalidPseudonymExceptionMapper());
         config.register(new InvalidEmailExceptionMapper());
         config.register(new InvalidPasswordExceptionMapper());
-        config.register(new ForbiddenExceptionMapper());
         config.register(new PlayerNotFoundExceptionMapper());
+        config.register(new CannotViewAnotherPlayerProfileExceptionMapper());
     }
 }
