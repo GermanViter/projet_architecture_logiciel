@@ -39,6 +39,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class JoinLobbyUseCaseTest {
     private static final int MEMBERS_AFTER_JOIN = 2;
+    private static final String NO_HERO_SELECTED = null;
 
     @Mock
     private SessionRepository sessions;
@@ -78,8 +79,8 @@ class JoinLobbyUseCaseTest {
         assertThat(output).isEqualTo(new JoinLobbyOutput(VALID_VALUE, new LobbyOutput(
                 lobbyHostedByAnotherPlayer.id().getValue(),
                 OTHER_VALUE,
-                List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE),
-                        new LobbyMemberOutput(VALID_VALUE, VALID_VALUE)),
+                List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE, NO_HERO_SELECTED),
+                        new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, NO_HERO_SELECTED)),
                 MAX_PLAYERS - MEMBERS_AFTER_JOIN)));
     }
 

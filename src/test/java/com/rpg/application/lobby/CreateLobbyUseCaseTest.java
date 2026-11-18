@@ -32,6 +32,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateLobbyUseCaseTest {
+    private static final String NO_HERO_SELECTED = null;
+
     @Mock
     private SessionRepository sessions;
 
@@ -55,7 +57,7 @@ class CreateLobbyUseCaseTest {
         LobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
         assertThat(output.hostId()).isEqualTo(VALID_VALUE);
-        assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE));
+        assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, NO_HERO_SELECTED));
         assertThat(output.availableSeats()).isEqualTo(MAX_PLAYERS - 1);
         assertThat(output.id()).isNotEmpty();
     }
