@@ -54,18 +54,6 @@ class StartGameUseCaseTest {
     }
 
     @Test
-    void execute_hostStartsGame_marksLobbyAsStarted() {
-        Lobby lobby = aLobby();
-        whenTokenBelongsToAPlayer();
-        whenLobbyIsStored(lobby);
-
-        LobbyOutput output = useCase.execute(startGameCommand(lobby));
-
-        assertThat(lobby.isStarted()).isTrue();
-        assertThat(output.started()).isTrue();
-    }
-
-    @Test
     void execute_hostStartsGame_returnsUpdatedLobby() {
         Lobby lobby = aLobby();
         whenTokenBelongsToAPlayer();
@@ -73,6 +61,7 @@ class StartGameUseCaseTest {
 
         LobbyOutput output = useCase.execute(startGameCommand(lobby));
 
+        assertThat(lobby.isStarted()).isTrue();
         assertThat(output.id()).isEqualTo(lobby.id().getValue());
         assertThat(output.hostId()).isEqualTo(VALID_VALUE);
         assertThat(output.started()).isTrue();

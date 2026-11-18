@@ -8,15 +8,19 @@ import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyCommand;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
 import com.rpg.application.lobby.LobbyOutput;
+import com.rpg.application.lobby.SelectHeroCommand;
+import com.rpg.application.lobby.SelectHeroUseCase;
 import com.rpg.application.lobby.StartGameCommand;
 import com.rpg.application.lobby.StartGameUseCase;
 import com.rpg.domain.session.exceptions.InvalidSessionException;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -29,21 +33,23 @@ public final class LobbyResource {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String LOBBY_PLAYERS_PATH = "{lobbyId}/players";
     private static final String PLAYER_ID_PATH = "{playerId}";
-
     private static final String GAME_PATH = "{lobbyId}/game";
 
     private final CreateLobbyUseCase createLobby;
     private final JoinLobbyUseCase joinLobby;
     private final LeaveLobbyUseCase leaveLobby;
     private final StartGameUseCase startGame;
+    private final SelectHeroUseCase selectHero;
 
     @Inject
     public LobbyResource(CreateLobbyUseCase createLobby, JoinLobbyUseCase joinLobby,
-                         LeaveLobbyUseCase leaveLobby, StartGameUseCase startGame) {
+                         LeaveLobbyUseCase leaveLobby, StartGameUseCase startGame,
+                         SelectHeroUseCase selectHero) {
         this.createLobby = createLobby;
         this.joinLobby = joinLobby;
         this.leaveLobby = leaveLobby;
         this.startGame = startGame;
+        this.selectHero = selectHero;
     }
 
     @POST
@@ -95,6 +101,22 @@ public final class LobbyResource {
 
         return Response.ok().entity(output).build();
     }
+
+    @PUT
+    @Path(LOBBY_PLAYERS_PATH + "/" + PLAYER_ID_PATH + "/hero")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response selectHero(@PathParam("lobbyId") String lobbyId,
+                               @PathParam("playerId") String playerId,
+                               @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization,
+                               SelectHeroRequest request) {
+        LobbyOutput output = selectHero.execute(
+                new SelectHeroCommand(extractBearerToken(authorization), lobbyId, playerId,
+                        request.heroName()));
+
+        return Response.ok().entity(output).build();
+    }
+
+    public record SelectHeroRequest(String heroName) {}
 
     private static String extractBearerToken(String authorization) {
         if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {

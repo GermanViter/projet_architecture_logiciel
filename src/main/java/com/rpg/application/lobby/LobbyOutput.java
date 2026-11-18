@@ -11,7 +11,12 @@ public record LobbyOutput(String id, String hostId, List<LobbyMemberOutput> play
         return new LobbyOutput(
                 lobby.id().getValue(),
                 lobby.host().getValue(),
-                lobby.members().stream().map(LobbyMemberOutput::from).toList(),
+                lobby.members().stream().map(member -> {
+                    String hero = lobby.getSelectedHero(member)
+                            .map(h -> h.name().getName())
+                            .orElse(null);
+                    return new LobbyMemberOutput(member.getValue(), member.getValue(), hero);
+                }).toList(),
                 lobby.availableSeats(),
                 lobby.isStarted());
     }

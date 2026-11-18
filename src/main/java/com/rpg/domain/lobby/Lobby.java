@@ -1,22 +1,27 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.hero.Hero;
 import com.rpg.domain.lobby.exceptions.GameAlreadyStartedException;
+import com.rpg.domain.lobby.exceptions.HeroAlreadySelectedException;
+import com.rpg.domain.lobby.exceptions.HeroAlreadyTakenException;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
-import com.rpg.domain.lobby.exceptions.NotEnoughPlayersException;
 import com.rpg.domain.lobby.exceptions.NotHostException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public final class Lobby {
-    static final int MIN_PLAYERS = 1;
-    static final int MAX_PLAYERS = 4;
+    private static final int MAX_PLAYERS = 4;
 
     private final LobbyId id;
     private final List<Pseudonym> members = new ArrayList<>();
+    private final Map<Pseudonym, Hero> selectedHeroes = new HashMap<>();
     private boolean started = false;
 
     private Lobby(LobbyId id, Pseudonym host) {
@@ -37,6 +42,9 @@ public final class Lobby {
     }
 
     public synchronized void join(Pseudonym player) {
+        if (started) {
+            throw new GameAlreadyStartedException();
+        }
         if (members.contains(player)) {
             throw new PlayerAlreadyMemberException();
         }
@@ -47,9 +55,13 @@ public final class Lobby {
     }
 
     public synchronized void leave(Pseudonym player) {
+        if (started) {
+            throw new GameAlreadyStartedException();
+        }
         if (!members.remove(player)) {
             throw new PlayerNotInLobbyException();
         }
+        clearHeroSelection(player);
     }
 
     public synchronized boolean hasMember(Pseudonym pseudonym) {
@@ -79,13 +91,33 @@ public final class Lobby {
         if (!host().equals(requester)) {
             throw new NotHostException();
         }
-        int playerCount = members.size();
-        if (playerCount < MIN_PLAYERS) {
-            throw new NotEnoughPlayersException();
-        }
-        if (playerCount > MAX_PLAYERS) {
-            throw new NotEnoughPlayersException();
-        }
+        ensureGroupIsPlayable();
         started = true;
+    }
+
+    void ensureGroupIsPlayable() {
+    }
+
+    public synchronized void selectHero(Pseudonym player, Hero hero) {
+        if (started) {
+            throw new GameAlreadyStartedException();
+        }
+        if (selectedHeroes.containsKey(player)) {
+            throw new HeroAlreadySelectedException();
+        }
+        for (Map.Entry<Pseudonym, Hero> entry : selectedHeroes.entrySet()) {
+            if (entry.getValue().equals(hero)) {
+                throw new HeroAlreadyTakenException();
+            }
+        }
+        selectedHeroes.put(player, hero);
+    }
+
+    public synchronized Optional<Hero> getSelectedHero(Pseudonym player) {
+        return Optional.ofNullable(selectedHeroes.get(player));
+    }
+
+    void clearHeroSelection(Pseudonym player) {
+        selectedHeroes.remove(player);
     }
 }
