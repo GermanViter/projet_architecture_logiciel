@@ -3,47 +3,59 @@ package com.rpg.application.lobby;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyId;
 import com.rpg.domain.lobby.LobbyRepository;
-import com.rpg.domain.player.Pseudonym;
+import com.rpg.domain.lobby.LobbyStatus;
+import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.UNKNOWN_LOBBY_ID;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class GetLobbyDetailsUseCaseTest {
-    private LobbyRepository lobbyRepository;
-    private GetLobbyDetailsUseCase getLobbyDetailsUseCase;
+    private static final String NO_HERO_SELECTED = null;
+
+    @Mock
+    private LobbyRepository lobbies;
+
+    private GetLobbyDetailsUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        lobbyRepository = mock(LobbyRepository.class);
-        getLobbyDetailsUseCase = new GetLobbyDetailsUseCase(lobbyRepository);
+        useCase = new GetLobbyDetailsUseCase(lobbies);
     }
 
     @Test
-    void execute_ShouldReturnLobbyDetails() {
-        Pseudonym host = new Pseudonym("host");
-        Lobby lobby = Lobby.openedBy(host);
-        lobby.join(new Pseudonym("player1"));
+    void execute_storedLobby_returnsItsHostStatusAndMembers() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+        when(lobbies.findById(lobby.id())).thenReturn(Optional.of(lobby));
 
-        when(lobbyRepository.findById(any(LobbyId.class))).thenReturn(Optional.of(lobby));
+        GetLobbyDetailsOutput output = useCase.execute(lobby.id().getValue());
 
-        GetLobbyDetailsOutput output = getLobbyDetailsUseCase.execute("any-id");
-
-        assertEquals("host", output.hostId());
-        assertEquals("OPEN", output.status());
-        assertEquals(2, output.members().size());
+        assertThat(output).isEqualTo(new GetLobbyDetailsOutput(
+                VALID_VALUE,
+                LobbyStatus.OPEN.name(),
+                List.of(new LobbyMemberDetail(VALID_VALUE, NO_HERO_SELECTED),
+                        new LobbyMemberDetail(OTHER_VALUE, NO_HERO_SELECTED))));
     }
 
     @Test
-    void execute_ShouldThrowExceptionWhenLobbyNotFound() {
-        when(lobbyRepository.findById(any(LobbyId.class))).thenReturn(Optional.empty());
+    void execute_unknownLobby_isRefused() {
+        when(lobbies.findById(LobbyId.of(UNKNOWN_LOBBY_ID))).thenReturn(Optional.empty());
 
-        assertThrows(com.rpg.domain.lobby.exceptions.LobbyNotFoundException.class, () -> {
-            getLobbyDetailsUseCase.execute("invalid-id");
-        });
+        assertThrows(LobbyNotFoundException.class, () -> useCase.execute(UNKNOWN_LOBBY_ID));
     }
 }

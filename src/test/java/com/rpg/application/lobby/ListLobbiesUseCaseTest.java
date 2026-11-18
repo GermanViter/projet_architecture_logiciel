@@ -2,47 +2,61 @@ package com.rpg.application.lobby;
 
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
-import com.rpg.domain.lobby.LobbyStatus;
-import com.rpg.domain.player.Pseudonym;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
+import static com.google.common.truth.Truth.assertThat;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
+import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyWithMembers;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ListLobbiesUseCaseTest {
-    private LobbyRepository lobbyRepository;
-    private ListLobbiesUseCase listLobbiesUseCase;
+    private static final int ONLY_THE_HOST = 1;
+
+    @Mock
+    private LobbyRepository lobbies;
+
+    private ListLobbiesUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        lobbyRepository = mock(LobbyRepository.class);
-        listLobbiesUseCase = new ListLobbiesUseCase(lobbyRepository);
+        useCase = new ListLobbiesUseCase(lobbies);
     }
 
     @Test
-    void execute_ShouldReturnLobbiesWithAvailableSeatsAndOpenStatus() {
-        Pseudonym host = new Pseudonym("host1");
-        Lobby lobby1 = Lobby.openedBy(host);
-        lobby1.join(new Pseudonym("player1"));
+    void execute_lobbyWithOneSeatLeft_isListed() {
+        when(lobbies.findAll()).thenReturn(List.of(aLobbyWithMembers(MAX_PLAYERS - 1)));
 
-        Lobby lobby2 = Lobby.openedBy(new Pseudonym("host2"));
+        ListLobbiesOutput output = useCase.execute();
 
+        assertThat(output.lobbies()).hasSize(1);
+    }
 
-        Lobby lobby3 = Lobby.openedBy(new Pseudonym("host3"));
+    @Test
+    void execute_fullLobby_isNotListed() {
+        when(lobbies.findAll()).thenReturn(List.of(aLobbyWithMembers(MAX_PLAYERS)));
 
-        lobby3.join(new Pseudonym("player2"));
-        lobby3.join(new Pseudonym("player3"));
-        lobby3.join(new Pseudonym("player4"));
+        ListLobbiesOutput output = useCase.execute();
 
-        when(lobbyRepository.findAll()).thenReturn(List.of(lobby1, lobby3));
+        assertThat(output.lobbies()).isEmpty();
+    }
 
-        ListLobbiesOutput output = listLobbiesUseCase.execute();
+    @Test
+    void execute_joinableLobby_isSummarizedWithItsIdHostAndPlayerCount() {
+        Lobby lobby = aLobby();
+        when(lobbies.findAll()).thenReturn(List.of(lobby));
 
-        assertEquals(1, output.lobbies().size());
-        assertEquals(lobby1.id().getValue(), output.lobbies().get(0).id());
+        ListLobbiesOutput output = useCase.execute();
+
+        assertThat(output.lobbies()).containsExactly(
+                new LobbySummary(lobby.id().getValue(), VALID_VALUE, ONLY_THE_HOST, MAX_PLAYERS));
     }
 }

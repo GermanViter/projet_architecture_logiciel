@@ -90,6 +90,27 @@ class LobbyTest {
     }
 
     @Test
+    void openedBy_player_startsOpen() {
+        Lobby lobby = Lobby.openedBy(aPseudonym());
+
+        assertThat(lobby.status()).isEqualTo(LobbyStatus.OPEN);
+    }
+
+    @Test
+    void isJoinable_lobbyWithOneSeatLeft_isTrue() {
+        Lobby lobby = aLobbyWithMembers(MAX_PLAYERS - 1);
+
+        assertThat(lobby.isJoinable()).isTrue();
+    }
+
+    @Test
+    void isJoinable_fullLobby_isFalse() {
+        Lobby lobby = aLobbyWithMembers(MAX_PLAYERS);
+
+        assertThat(lobby.isJoinable()).isFalse();
+    }
+
+    @Test
     void join_playerAlreadyMember_isRefused() {
         Lobby lobby = aLobby();
         lobby.join(anotherPseudonym());
