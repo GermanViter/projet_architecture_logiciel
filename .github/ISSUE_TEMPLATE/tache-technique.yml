@@ -1,0 +1,59 @@
+name: Tâche technique
+description: Un refactor ou une tâche de configuration, sans nouvelle fonctionnalité
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Donne un titre court et orienté action (ex. « Renforcer l'encapsulation de Hero »).
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: "refactor : changement de code sans changement de comportement. chore : configuration, dépendances, fichiers hors code."
+      options:
+        - refactor
+        - chore
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: En 1 à 3 phrases, ce qui doit changer et pourquoi (code smell visé, principe en jeu, besoin d'outillage).
+      placeholder: Hero expose son inventaire et les appelants enchaînent les getters, ce qui viole la loi de Déméter.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      description: 2 à 5 conditions concrètes et vérifiables. Pour un refactor, inclure que le comportement reste inchangé.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Taille
+      description: "Estimation selon le nombre de classes ou fichiers touchés : S (quelques fichiers), M (plusieurs classes ou couches), L (plusieurs packages)."
+      options:
+        - S
+        - M
+        - L
+    validations:
+      required: true
+  - type: input
+    id: size-assumption
+    attributes:
+      label: Hypothèse de l'estimation
+      description: En une phrase, sur quoi repose la taille choisie.
+      placeholder: Touche Hero et ses appelants dans la couche application.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Classes liées, issue liée (#…), ou décision de design à prendre d'abord.

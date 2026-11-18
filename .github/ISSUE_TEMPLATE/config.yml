@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question sur une règle du domaine
+    url: https://github.com/GermanViter/projet_architecture_logiciel/blob/master/docs/domain-rules.md
+    about: Consulte d'abord les règles du domaine. Si une règle reste ambiguë, pose la question au client plutôt que de deviner.
