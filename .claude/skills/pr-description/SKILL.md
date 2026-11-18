@@ -5,29 +5,29 @@ description: Writes pull request descriptions for our team's Java API project. U
 
 # PR Description
 
-Look at the branch changes first (`git diff main...HEAD` and `git log main..HEAD --oneline`), then write the description in this format:
+Look at the branch changes first (`git diff main...HEAD` and `git log main..HEAD --oneline`), then write the description in this format (headings are in French on purpose, copy them as-is):
 
-## Summary
+## Résumé
 One or two sentences: what this PR does and why.
 
-## Changes
+## Changements
 - Short bullet per meaningful change (group by class or package)
 - Mention new, renamed, or deleted classes
 
-## How to test
+## Comment tester
 Steps a teammate can follow to check it works
 (for example: run the app, call a method, run the tests).
 If a test is not required (e. g. changes in documentation), then don't add this section in the pull request.
 
-## Related issue
+## Issue liée
 `Closes #<number>` (ask the user for the number if unknown)
 If it doesn't close any issue, then don't include this section.
 
-## Notes for reviewers
+## Notes pour les relecteurs
 Anything unsure, any trade-off made, or anything intentionally left out.
 
 ## Rules
-- Write in French, in plain language a teammate can skim in 30 seconds.
+- Write everything in French, including the section headings: use exactly the French headings above (`Résumé`, `Changements`, `Comment tester`, `Issue liée`, `Notes pour les relecteurs`) and never the English ones (Summary, Changes, How to test, Related issue, Notes for reviewers). Use plain language a teammate can skim in 30 seconds.
 - Explain the why, not just the what; the diff already shows the what.
 - Keep the PR focused. If the changes mix unrelated things
   (for example a refactor plus a new feature), suggest splitting it.
