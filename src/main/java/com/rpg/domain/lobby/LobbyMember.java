@@ -1,9 +1,11 @@
 package com.rpg.domain.lobby;
 
 import com.rpg.domain.hero.Hero;
+import com.rpg.domain.hero.HeroName;
 import com.rpg.domain.player.Pseudonym;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class LobbyMember {
     private final Pseudonym pseudonym;
@@ -26,8 +28,8 @@ public final class LobbyMember {
         return pseudonym;
     }
 
-    public Hero hero() {
-        return hero;
+    public Optional<HeroName> selectedHeroName() {
+        return Optional.ofNullable(hero).map(Hero::name);
     }
 
     public boolean isReady() {
