@@ -293,6 +293,16 @@ class LobbyTest {
     }
 
     @Test
+    void startGame_afterTheLastMemberLeft_isRefusedAndLobbyStaysOpen() {
+        Lobby lobby = aLobbyReadyToStartWithMembers(MIN_PLAYERS);
+        lobby.leave(aPseudonym());
+
+        assertThrows(NotHostException.class, () -> lobby.startGame(aPseudonym()));
+
+        assertThat(lobby.status()).isEqualTo(LobbyStatus.OPEN);
+    }
+
+    @Test
     void startGame_alreadyStarted_isRefused() {
         Lobby lobby = aStartedLobby();
 

@@ -108,9 +108,13 @@ public final class Lobby {
     }
 
     private void ensureIsHost(Pseudonym requester) {
-        if (!host().equals(requester)) {
+        if (!isHostedBy(requester)) {
             throw new NotHostException();
         }
+    }
+
+    private boolean isHostedBy(Pseudonym requester) {
+        return !members.isEmpty() && host().equals(requester);
     }
 
     private void ensureEveryMemberIsReady() {
