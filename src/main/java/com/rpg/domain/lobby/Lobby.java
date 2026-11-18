@@ -1,6 +1,5 @@
 package com.rpg.domain.lobby;
 
-import com.rpg.domain.hero.Hero;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.LobbyNotOpenException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
