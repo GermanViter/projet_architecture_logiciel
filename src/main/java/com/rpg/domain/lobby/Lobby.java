@@ -1,5 +1,6 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.hero.Hero;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
@@ -34,15 +35,14 @@ public final class Lobby {
         return status;
     }
 
-    public synchronized void setStatus(LobbyStatus status) {
-        this.status = status;
-    }
-
     public synchronized Pseudonym host() {
         return members.get(0).pseudonym();
     }
 
     public synchronized void join(Pseudonym player) {
+        if (status != LobbyStatus.OPEN) {
+            throw new IllegalStateException("Lobby is not open");
+        }
         if (hasMember(player)) {
             throw new PlayerAlreadyMemberException();
         }
@@ -54,7 +54,7 @@ public final class Lobby {
 
     public synchronized void leave(Pseudonym player) {
         LobbyMember member = findMember(player)
-                .orElseThrow(() -> new PlayerNotInLobbyException());
+                .orElseThrow(PlayerNotInLobbyException::new);
         members.remove(member);
     }
 
@@ -74,12 +74,12 @@ public final class Lobby {
         return MAX_PLAYERS - members.size();
     }
 
-    public synchronized void setReady(Pseudonym pseudonym, boolean ready) {
-        findMember(pseudonym).ifPresent(m -> m.setReady(ready));
+    public int capacity() {
+        return MAX_PLAYERS;
     }
 
-    public synchronized void setHero(Pseudonym pseudonym, com.rpg.domain.hero.Hero hero) {
-        findMember(pseudonym).ifPresent(m -> m.setHero(hero));
+    public synchronized boolean isJoinable() {
+        return status == LobbyStatus.OPEN && availableSeats() > 0;
     }
 
     private Optional<LobbyMember> findMember(Pseudonym pseudonym) {

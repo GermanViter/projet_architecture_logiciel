@@ -12,12 +12,11 @@ import com.rpg.application.lobby.LeaveLobbyCommand;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
 import com.rpg.application.lobby.ListLobbiesOutput;
 import com.rpg.application.lobby.ListLobbiesUseCase;
-import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
-import jakarta.inject.Inject;
 import com.rpg.application.lobby.LobbyOutput;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.GET;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -99,13 +98,7 @@ public final class LobbyResource {
     @GET
     @Path("{lobbyId}")
     public Response getLobbyDetails(@PathParam("lobbyId") String lobbyId) {
-        try {
-            GetLobbyDetailsOutput output = getLobbyDetails.execute(lobbyId);
-            return Response.ok(output).build();
-        } catch (LobbyNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new com.rpg.api.ErrorResponse(ex.code(), ex.getMessage()))
-                    .build();
-        }
+        GetLobbyDetailsOutput output = getLobbyDetails.execute(lobbyId);
+        return Response.ok(output).build();
     }
 }

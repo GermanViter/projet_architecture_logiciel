@@ -5,15 +5,21 @@ import com.rpg.domain.player.Pseudonym;
 
 import java.util.Objects;
 
-public class LobbyMember {
+public final class LobbyMember {
     private final Pseudonym pseudonym;
-    private Hero hero;
-    private boolean isReady;
+    private final Hero hero;
+    private final boolean isReady;
 
     public LobbyMember(Pseudonym pseudonym) {
-        this.pseudonym = pseudonym;
+        this.pseudonym = Objects.requireNonNull(pseudonym);
         this.hero = null;
         this.isReady = false;
+    }
+
+    private LobbyMember(Pseudonym pseudonym, Hero hero, boolean isReady) {
+        this.pseudonym = pseudonym;
+        this.hero = hero;
+        this.isReady = isReady;
     }
 
     public Pseudonym pseudonym() {
@@ -24,16 +30,16 @@ public class LobbyMember {
         return hero;
     }
 
-    public void setHero(Hero hero) {
-        this.hero = hero;
-    }
-
     public boolean isReady() {
         return isReady;
     }
 
-    public void setReady(boolean ready) {
-        isReady = ready;
+    public LobbyMember withHero(Hero newHero) {
+        return new LobbyMember(this.pseudonym, newHero, this.isReady);
+    }
+
+    public LobbyMember withReady(boolean ready) {
+        return new LobbyMember(this.pseudonym, this.hero, ready);
     }
 
     @Override
