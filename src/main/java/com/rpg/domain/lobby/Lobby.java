@@ -2,6 +2,7 @@ package com.rpg.domain.lobby;
 
 import com.rpg.domain.hero.Hero;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
+import com.rpg.domain.lobby.exceptions.LobbyNotOpenException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
@@ -41,7 +42,7 @@ public final class Lobby {
 
     public synchronized void join(Pseudonym player) {
         if (status != LobbyStatus.OPEN) {
-            throw new IllegalStateException("Lobby is not open");
+            throw new LobbyNotOpenException();
         }
         if (hasMember(player)) {
             throw new PlayerAlreadyMemberException();
