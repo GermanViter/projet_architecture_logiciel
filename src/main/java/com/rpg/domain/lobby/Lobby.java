@@ -1,9 +1,14 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.hero.Hero;
+import com.rpg.domain.hero.HeroName;
+import com.rpg.domain.lobby.exceptions.HeroAlreadyTakenException;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.LobbyNotOpenException;
+import com.rpg.domain.lobby.exceptions.NotHostException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
+import com.rpg.domain.lobby.exceptions.PlayersNotReadyException;
 import com.rpg.domain.player.Pseudonym;
 
 import java.util.ArrayList;
@@ -40,9 +45,7 @@ public final class Lobby {
     }
 
     public synchronized void join(Pseudonym player) {
-        if (status != LobbyStatus.OPEN) {
-            throw new LobbyNotOpenException();
-        }
+        ensureIsOpen();
         if (hasMember(player)) {
             throw new PlayerAlreadyMemberException();
         }
@@ -53,9 +56,25 @@ public final class Lobby {
     }
 
     public synchronized void leave(Pseudonym player) {
+        ensureIsOpen();
         LobbyMember member = findMember(player)
                 .orElseThrow(PlayerNotInLobbyException::new);
         members.remove(member);
+    }
+
+    public synchronized void selectHero(Pseudonym player, Hero hero) {
+        ensureIsOpen();
+        LobbyMember member = findMember(player)
+                .orElseThrow(PlayerNotInLobbyException::new);
+        ensureHeroIsNotTakenByAnotherMember(member, hero.name());
+        members.set(members.indexOf(member), member.withHero(hero));
+    }
+
+    public synchronized void startGame(Pseudonym requester) {
+        ensureIsHost(requester);
+        ensureIsOpen();
+        ensureEveryMemberIsReady();
+        status = LobbyStatus.STARTED;
     }
 
     public synchronized boolean hasMember(Pseudonym pseudonym) {
@@ -80,6 +99,37 @@ public final class Lobby {
 
     public synchronized boolean isJoinable() {
         return status == LobbyStatus.OPEN && availableSeats() > 0;
+    }
+
+    private void ensureIsOpen() {
+        if (status != LobbyStatus.OPEN) {
+            throw new LobbyNotOpenException();
+        }
+    }
+
+    private void ensureIsHost(Pseudonym requester) {
+        if (!isHostedBy(requester)) {
+            throw new NotHostException();
+        }
+    }
+
+    private boolean isHostedBy(Pseudonym requester) {
+        return !members.isEmpty() && host().equals(requester);
+    }
+
+    private void ensureEveryMemberIsReady() {
+        if (!members.stream().allMatch(LobbyMember::isReady)) {
+            throw new PlayersNotReadyException();
+        }
+    }
+
+    private void ensureHeroIsNotTakenByAnotherMember(LobbyMember selector, HeroName heroName) {
+        boolean takenByAnotherMember = members.stream()
+                .filter(member -> !member.equals(selector))
+                .anyMatch(member -> member.hasSelected(heroName));
+        if (takenByAnotherMember) {
+            throw new HeroAlreadyTakenException();
+        }
     }
 
     private Optional<LobbyMember> findMember(Pseudonym pseudonym) {

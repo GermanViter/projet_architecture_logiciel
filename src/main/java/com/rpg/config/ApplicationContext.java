@@ -4,6 +4,7 @@ import com.rpg.api.FallbackExceptionMapper;
 import com.rpg.api.lobby.LobbyInstaller;
 import com.rpg.api.player.PlayerInstaller;
 import com.rpg.api.session.SessionInstaller;
+import com.rpg.infrastructure.hero.StarterHeroCatalogue;
 import com.rpg.infrastructure.player.PlayerRegistry;
 import com.rpg.infrastructure.session.SessionRegistry;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -36,7 +37,8 @@ public final class ApplicationContext {
         SessionRegistry sessionRegistry = new SessionRegistry();
         new PlayerInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
         new SessionInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
-        new LobbyInstaller(playerRegistry, sessionRegistry).install(resourceConfig);
+        new LobbyInstaller(playerRegistry, sessionRegistry, StarterHeroCatalogue.create())
+                .install(resourceConfig);
         resourceConfig.register(new FallbackExceptionMapper());
 
         return resourceConfig;

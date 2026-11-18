@@ -4,6 +4,7 @@ import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyId;
 import com.rpg.domain.lobby.LobbyRepository;
+import com.rpg.domain.lobby.LobbyStatus;
 import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class JoinLobbyUseCaseTest {
     private static final int MEMBERS_AFTER_JOIN = 2;
+    private static final String NO_HERO_SELECTED = null;
 
     @Mock
     private SessionRepository sessions;
@@ -78,8 +80,9 @@ class JoinLobbyUseCaseTest {
         assertThat(output).isEqualTo(new JoinLobbyOutput(VALID_VALUE, new LobbyOutput(
                 lobbyHostedByAnotherPlayer.id().getValue(),
                 OTHER_VALUE,
-                List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE),
-                        new LobbyMemberOutput(VALID_VALUE, VALID_VALUE)),
+                LobbyStatus.OPEN.name(),
+                List.of(new LobbyMemberOutput(OTHER_VALUE, OTHER_VALUE, NO_HERO_SELECTED),
+                        new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, NO_HERO_SELECTED)),
                 MAX_PLAYERS - MEMBERS_AFTER_JOIN)));
     }
 
