@@ -1,9 +1,21 @@
 package com.rpg.domain.lobby;
 
+import com.rpg.domain.hero.Hero;
+import com.rpg.domain.hero.HeroName;
+import com.rpg.domain.hero.characteristics.Characteristic;
+import com.rpg.domain.hero.characteristics.Characteristics;
+import com.rpg.domain.hero.fixtures.HeroFixture;
+import com.rpg.domain.hero.role.Warrior;
+import com.rpg.domain.hero.species.Species;
+import com.rpg.domain.lobby.exceptions.HeroAlreadySelectedException;
+import com.rpg.domain.lobby.exceptions.HeroAlreadyTakenException;
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
@@ -145,5 +157,52 @@ class LobbyTest {
         assertThrows(PlayerNotInLobbyException.class, () -> lobby.leave(anotherPseudonym()));
 
         assertThat(lobby.members()).containsExactly(aPseudonym());
+    }
+
+    private static Hero aHero() {
+        return HeroFixture.aHero();
+    }
+
+    @Test
+    void selectHero_playerSelectsHero_hasSelectedHero() {
+        Lobby lobby = aLobby();
+        Hero hero = aHero();
+
+        lobby.selectHero(aPseudonym(), hero);
+
+        Optional<Hero> selected = lobby.getSelectedHero(aPseudonym());
+        assertThat(selected).isPresent();
+        assertThat(selected.get()).isEqualTo(hero);
+    }
+
+    @Test
+    void selectHero_heroAlreadyTaken_isRefused() {
+        Lobby lobby = aLobby();
+        Hero hero = aHero();
+        lobby.join(anotherPseudonym());
+        lobby.selectHero(anotherPseudonym(), hero);
+
+        assertThrows(HeroAlreadyTakenException.class, () -> lobby.selectHero(aPseudonym(), hero));
+    }
+
+    @Test
+    void selectHero_playerAlreadySelected_isRefused() {
+        Lobby lobby = aLobby();
+        Hero hero = aHero();
+        lobby.selectHero(aPseudonym(), hero);
+
+        assertThrows(HeroAlreadySelectedException.class, () -> lobby.selectHero(aPseudonym(), hero));
+    }
+
+    @Test
+    void leave_playerLeaves_clearsHeroSelection() {
+        Lobby lobby = aLobby();
+        Hero hero = aHero();
+        lobby.join(anotherPseudonym());
+        lobby.selectHero(anotherPseudonym(), hero);
+
+        lobby.leave(anotherPseudonym());
+
+        assertThat(lobby.getSelectedHero(anotherPseudonym())).isEmpty();
     }
 }

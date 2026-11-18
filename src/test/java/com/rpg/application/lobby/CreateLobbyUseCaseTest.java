@@ -54,7 +54,7 @@ class CreateLobbyUseCaseTest {
         LobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
         assertThat(output.hostId()).isEqualTo(VALID_VALUE);
-        assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, java.util.Optional.empty()));
+        assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, null));
         assertThat(output.availableSeats()).isEqualTo(MAX_PLAYERS - 1);
         assertThat(output.id()).isNotEmpty();
     }

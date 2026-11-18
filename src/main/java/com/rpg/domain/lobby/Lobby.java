@@ -21,7 +21,6 @@ public final class Lobby {
     private final LobbyId id;
     private final List<Pseudonym> members = new ArrayList<>();
     private final Map<Pseudonym, Hero> selectedHeroes = new HashMap<>();
-    private final List<Hero> availableHeroes = new ArrayList<>();
     private boolean started = false;
 
     private Lobby(LobbyId id, Pseudonym host) {
@@ -55,6 +54,7 @@ public final class Lobby {
         if (!members.remove(player)) {
             throw new PlayerNotInLobbyException();
         }
+        clearHeroSelection(player);
     }
 
     public synchronized boolean hasMember(Pseudonym pseudonym) {
@@ -71,10 +71,6 @@ public final class Lobby {
 
     public synchronized int availableSeats() {
         return MAX_PLAYERS - members.size();
-    }
-
-    public synchronized void addAvailableHero(Hero hero) {
-        availableHeroes.add(hero);
     }
 
     public synchronized void selectHero(Pseudonym player, Hero hero) {
@@ -95,10 +91,6 @@ public final class Lobby {
 
     public synchronized Optional<Hero> getSelectedHero(Pseudonym player) {
         return Optional.ofNullable(selectedHeroes.get(player));
-    }
-
-    public synchronized List<Hero> getAvailableHeroes() {
-        return List.copyOf(availableHeroes);
     }
 
     public synchronized boolean isStarted() {

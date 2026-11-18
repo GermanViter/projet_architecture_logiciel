@@ -3,6 +3,7 @@ package com.rpg.domain.hero;
 import com.rpg.domain.hero.exceptions.DuplicateHeroNameException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class HeroRegistry {
     private final List<Hero> heroes = new ArrayList<>();
@@ -26,5 +27,11 @@ public class HeroRegistry {
 
     public List<Hero> allHeroes() {
         return new ArrayList<>(heroes);
+    }
+
+    public Optional<Hero> findByName(HeroName name) {
+        return heroes.stream()
+                .filter(h -> h.name().equals(name))
+                .findFirst();
     }
 }

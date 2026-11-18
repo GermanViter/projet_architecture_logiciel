@@ -2,13 +2,20 @@ package com.rpg.application.lobby;
 
 import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.hero.Hero;
+import com.rpg.domain.hero.HeroName;
 import com.rpg.domain.hero.HeroRegistry;
+import com.rpg.domain.hero.characteristics.Characteristic;
+import com.rpg.domain.hero.characteristics.Characteristics;
 import com.rpg.domain.hero.fixtures.HeroFixture;
+import com.rpg.domain.hero.role.Warrior;
+import com.rpg.domain.hero.species.Species;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
+import com.rpg.domain.lobby.exceptions.CannotRemoveAnotherPlayerException;
 import com.rpg.domain.lobby.exceptions.GameAlreadyStartedException;
 import com.rpg.domain.lobby.exceptions.HeroAlreadySelectedException;
 import com.rpg.domain.lobby.exceptions.HeroAlreadyTakenException;
+import com.rpg.domain.lobby.exceptions.HeroNotFoundException;
 import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
 import com.rpg.domain.lobby.fixtures.LobbyFixture;
 import com.rpg.domain.player.PlayerRepository;
@@ -33,7 +40,6 @@ import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -49,16 +55,15 @@ class SelectHeroUseCaseTest {
     @Mock
     private LobbyRepository lobbies;
 
-    @Mock
-    private HeroRegistry heroRegistry;
-
     private SelectHeroUseCase useCase;
 
     private final Lobby lobby = LobbyFixture.aLobby();
+    private final HeroRegistry heroRegistry = new HeroRegistry();
     private final Hero hero = HeroFixture.aHero();
 
     @BeforeEach
     void setUp() {
+        heroRegistry.addHero(hero);
         useCase = new SelectHeroUseCase(new ConnectedPlayerFinder(sessions, players), lobbies, heroRegistry);
     }
 
@@ -66,14 +71,11 @@ class SelectHeroUseCaseTest {
     void execute_memberSelectsHero_returnsUpdatedLobby() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored();
-        whenHeroExists();
 
         LobbyOutput output = useCase.execute(selectHeroCommand());
 
-        assertThat(lobby.getSelectedHero(PseudonymFixture.aPseudonym())).isPresent();
-        assertThat(lobby.getSelectedHero(PseudonymFixture.aPseudonym()).get().name().getName())
-                .isEqualTo(VALID_HERO_NAME);
-        verify(lobbies).save(lobby);
+        assertThat(output.players()).hasSize(1);
+        assertThat(output.players().get(0).selectedHero()).isEqualTo(VALID_HERO_NAME);
     }
 
     @Test
@@ -97,7 +99,6 @@ class SelectHeroUseCaseTest {
     void execute_playerAlreadySelectedHero_isRefused() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored();
-        whenHeroExists();
         lobby.selectHero(PseudonymFixture.aPseudonym(), hero);
 
         assertThrows(HeroAlreadySelectedException.class, () -> useCase.execute(selectHeroCommand()));
@@ -107,7 +108,6 @@ class SelectHeroUseCaseTest {
     void execute_heroAlreadyTakenByAnotherPlayer_isRefused() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored();
-        whenHeroExists();
         lobby.join(PseudonymFixture.anotherPseudonym());
         lobby.selectHero(PseudonymFixture.anotherPseudonym(), hero);
 
@@ -118,10 +118,26 @@ class SelectHeroUseCaseTest {
     void execute_gameAlreadyStarted_isRefused() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored();
-        whenHeroExists();
         lobby.startGame();
 
         assertThrows(GameAlreadyStartedException.class, () -> useCase.execute(selectHeroCommand()));
+    }
+
+    @Test
+    void execute_heroNotFound_isRefused() {
+        whenTokenBelongsToAPlayer();
+        whenLobbyIsStored();
+
+        assertThrows(HeroNotFoundException.class, () -> useCase.execute(
+                new SelectHeroCommand(VALID_TOKEN, lobby.id().getValue(), VALID_VALUE, "NonExistent")));
+    }
+
+    @Test
+    void execute_playerIdDoesNotMatchToken_isRefused() {
+        whenTokenBelongsToAPlayer();
+
+        assertThrows(CannotRemoveAnotherPlayerException.class, () -> useCase.execute(
+                new SelectHeroCommand(VALID_TOKEN, lobby.id().getValue(), "otherPlayer", VALID_HERO_NAME)));
     }
 
     private void whenTokenBelongsToAPlayer() {
@@ -131,10 +147,6 @@ class SelectHeroUseCaseTest {
 
     private void whenLobbyIsStored() {
         when(lobbies.findById(lobby.id())).thenReturn(Optional.of(lobby));
-    }
-
-    private void whenHeroExists() {
-        when(heroRegistry.allHeroes()).thenReturn(List.of(hero));
     }
 
     private SelectHeroCommand selectHeroCommand() {
