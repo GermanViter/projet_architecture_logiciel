@@ -1,22 +1,26 @@
 package com.rpg.domain.lobby;
 
 import com.rpg.domain.lobby.exceptions.LobbyFullException;
+import com.rpg.domain.lobby.exceptions.LobbyNotOpenException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
 import com.rpg.domain.player.Pseudonym;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class Lobby {
     private static final int MAX_PLAYERS = 4;
 
     private final LobbyId id;
-    private final List<Pseudonym> members = new ArrayList<>();
+    private final List<LobbyMember> members = new ArrayList<>();
+    private LobbyStatus status;
 
     private Lobby(LobbyId id, Pseudonym host) {
         this.id = id;
-        this.members.add(host);
+        this.status = LobbyStatus.OPEN;
+        this.members.add(new LobbyMember(host));
     }
 
     public static Lobby openedBy(Pseudonym host) {
@@ -27,39 +31,60 @@ public final class Lobby {
         return id;
     }
 
+    public synchronized LobbyStatus status() {
+        return status;
+    }
+
     public synchronized Pseudonym host() {
-        return members.getFirst();
+        return members.get(0).pseudonym();
     }
 
     public synchronized void join(Pseudonym player) {
-        if (members.contains(player)) {
+        if (status != LobbyStatus.OPEN) {
+            throw new LobbyNotOpenException();
+        }
+        if (hasMember(player)) {
             throw new PlayerAlreadyMemberException();
         }
         if (availableSeats() == 0) {
             throw new LobbyFullException();
         }
-        members.add(player);
+        members.add(new LobbyMember(player));
     }
 
     public synchronized void leave(Pseudonym player) {
-        if (!members.remove(player)) {
-            throw new PlayerNotInLobbyException();
-        }
+        LobbyMember member = findMember(player)
+                .orElseThrow(PlayerNotInLobbyException::new);
+        members.remove(member);
     }
 
     public synchronized boolean hasMember(Pseudonym pseudonym) {
-        return members.contains(pseudonym);
+        return findMember(pseudonym).isPresent();
     }
 
     public synchronized boolean isEmpty() {
         return members.isEmpty();
     }
 
-    public synchronized List<Pseudonym> members() {
+    public synchronized List<LobbyMember> members() {
         return List.copyOf(members);
     }
 
     public synchronized int availableSeats() {
         return MAX_PLAYERS - members.size();
+    }
+
+    public int capacity() {
+        return MAX_PLAYERS;
+    }
+
+    public synchronized boolean isJoinable() {
+        return status == LobbyStatus.OPEN && availableSeats() > 0;
+    }
+
+    private Optional<LobbyMember> findMember(Pseudonym pseudonym) {
+        return members.stream()
+                .filter(m -> m.pseudonym().equals(pseudonym))
+                .findFirst();
     }
 }

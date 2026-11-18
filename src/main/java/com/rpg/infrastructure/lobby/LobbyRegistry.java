@@ -36,7 +36,8 @@ public final class LobbyRegistry implements LobbyRepository {
         return lobbies.stream().anyMatch(existing -> existing.hasMember(player));
     }
 
-    public synchronized List<Lobby> allLobbies() {
+    @Override
+    public synchronized List<Lobby> findAll() {
         return new ArrayList<>(lobbies);
     }
 }
