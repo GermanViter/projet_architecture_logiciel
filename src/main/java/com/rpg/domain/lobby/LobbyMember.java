@@ -10,18 +10,14 @@ import java.util.Optional;
 public final class LobbyMember {
     private final Pseudonym pseudonym;
     private final Hero hero;
-    private final boolean isReady;
 
     public LobbyMember(Pseudonym pseudonym) {
-        this.pseudonym = Objects.requireNonNull(pseudonym);
-        this.hero = null;
-        this.isReady = false;
+        this(pseudonym, null);
     }
 
-    private LobbyMember(Pseudonym pseudonym, Hero hero, boolean isReady) {
-        this.pseudonym = pseudonym;
+    private LobbyMember(Pseudonym pseudonym, Hero hero) {
+        this.pseudonym = Objects.requireNonNull(pseudonym);
         this.hero = hero;
-        this.isReady = isReady;
     }
 
     public Pseudonym pseudonym() {
@@ -37,15 +33,11 @@ public final class LobbyMember {
     }
 
     public boolean isReady() {
-        return isReady;
+        return hero != null;
     }
 
     public LobbyMember withHero(Hero newHero) {
-        return new LobbyMember(this.pseudonym, newHero, this.isReady);
-    }
-
-    public LobbyMember withReady(boolean ready) {
-        return new LobbyMember(this.pseudonym, this.hero, ready);
+        return new LobbyMember(this.pseudonym, newHero);
     }
 
     @Override
@@ -66,7 +58,6 @@ public final class LobbyMember {
         return "LobbyMember{" +
                 "pseudonym=" + pseudonym +
                 ", hero=" + hero +
-                ", isReady=" + isReady +
                 '}';
     }
 }
