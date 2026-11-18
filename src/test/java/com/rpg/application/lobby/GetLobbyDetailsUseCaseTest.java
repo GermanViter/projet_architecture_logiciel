@@ -33,7 +33,7 @@ class GetLobbyDetailsUseCaseTest {
 
         GetLobbyDetailsOutput output = getLobbyDetailsUseCase.execute("any-id");
 
-        assertEquals("host", output.hostPseudonym());
+        assertEquals("host", output.hostId());
         assertEquals("OPEN", output.status());
         assertEquals(2, output.members().size());
     }
