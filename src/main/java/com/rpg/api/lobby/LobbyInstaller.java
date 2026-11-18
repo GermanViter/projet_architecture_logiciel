@@ -8,6 +8,7 @@ import com.rpg.application.lobby.JoinLobbyUseCase;
 import com.rpg.application.lobby.LeaveLobbyUseCase;
 import com.rpg.application.lobby.ListLobbiesUseCase;
 import com.rpg.application.lobby.SelectHeroUseCase;
+import com.rpg.application.lobby.StartGameUseCase;
 import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.hero.HeroRepository;
 import com.rpg.domain.player.PlayerRepository;
@@ -36,6 +37,7 @@ public final class LobbyInstaller {
         ListLobbiesUseCase listLobbies = new ListLobbiesUseCase(lobbyRegistry);
         GetLobbyDetailsUseCase getLobbyDetails = new GetLobbyDetailsUseCase(lobbyRegistry);
         SelectHeroUseCase selectHero = new SelectHeroUseCase(connectedPlayers, lobbyRegistry, heroes);
+        StartGameUseCase startGame = new StartGameUseCase(connectedPlayers, lobbyRegistry);
 
         config.register(new AbstractBinder() {
             @Override
@@ -46,6 +48,7 @@ public final class LobbyInstaller {
                 bind(listLobbies).to(ListLobbiesUseCase.class);
                 bind(getLobbyDetails).to(GetLobbyDetailsUseCase.class);
                 bind(selectHero).to(SelectHeroUseCase.class);
+                bind(startGame).to(StartGameUseCase.class);
             }
         });
         config.register(LobbyResource.class);
@@ -56,5 +59,6 @@ public final class LobbyInstaller {
         config.register(new CannotSelectHeroForAnotherPlayerExceptionMapper());
         config.register(new HeroNotFoundExceptionMapper());
         config.register(new CharacterNameNotValidExceptionMapper());
+        config.register(new NotHostExceptionMapper());
     }
 }
