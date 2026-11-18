@@ -1,0 +1,58 @@
+name: Fonctionnalité
+description: Une nouvelle fonctionnalité ou user story à construire
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Donne un titre court et orienté action (ex. « Ajouter la validation du nom du héros »).
+        Pour une user story, préfixe le titre par son code (ex. `[L6] Lancer la partie`).
+        Si l'idée contient en fait deux sujets, ouvre deux issues.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: En 1 à 3 phrases, ce qui doit se passer et pourquoi. Pour une user story, « En tant que…, je veux…, afin de… ».
+      placeholder: En tant qu'hôte, je veux lancer la partie afin que le groupe puisse commencer l'aventure.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      description: 2 à 5 conditions concrètes et vérifiables (Given/When/Then ou simples puces). Évite les critères vagues comme « fonctionne correctement ».
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: API
+      description: Route(s) concernée(s), si la fonctionnalité touche la couche HTTP.
+      placeholder: "Route : `POST /lobbies/{lobbyId}/game`"
+  - type: dropdown
+    id: size
+    attributes:
+      label: Taille
+      description: "Estimation selon le nombre de classes ou fichiers touchés : S (quelques fichiers), M (plusieurs classes ou couches), L (plusieurs packages)."
+      options:
+        - S
+        - M
+        - L
+    validations:
+      required: true
+  - type: input
+    id: size-assumption
+    attributes:
+      label: Hypothèse de l'estimation
+      description: En une phrase, sur quoi repose la taille choisie.
+      placeholder: Touche Lobby, le cas d'utilisation et LobbyResource.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Classes liées, issue liée (#…), décision de design à prendre d'abord, ou règle ambiguë à faire valider par le client.
