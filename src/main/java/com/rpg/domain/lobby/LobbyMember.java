@@ -32,6 +32,10 @@ public final class LobbyMember {
         return Optional.ofNullable(hero).map(Hero::name);
     }
 
+    public boolean hasSelected(HeroName heroName) {
+        return selectedHeroName().filter(heroName::equals).isPresent();
+    }
+
     public boolean isReady() {
         return isReady;
     }
