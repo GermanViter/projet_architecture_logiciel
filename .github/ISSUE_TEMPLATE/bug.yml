@@ -1,0 +1,75 @@
+name: Bug
+description: Un comportement qui ne respecte pas les règles du domaine ou le contrat de l'API
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Donne un titre court et orienté action (ex. « Corriger le calcul des points de vie max »).
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: En 1 à 3 phrases, ce qui ne va pas et pourquoi c'est un problème.
+      placeholder: Le calcul des HP max ne prend pas en compte le modificateur de Constitution.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+      description: Requête HTTP, appel de méthode ou test qui met le problème en évidence.
+      placeholder: |
+        1. Lancer le serveur (`mvn exec:java`)
+        2. `curl -X POST http://localhost:8080/...`
+        3. Observer la réponse
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportement attendu
+      description: Ce qui devrait se passer, avec la règle concernée de `docs/domain-rules.md` si elle existe.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportement observé
+      description: Ce qui se passe réellement (code HTTP, message d'erreur, trace).
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      description: 2 à 5 conditions concrètes et vérifiables qui confirment que le bug est corrigé.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Taille
+      description: "Estimation selon le nombre de classes ou fichiers touchés : S (quelques fichiers), M (plusieurs classes ou couches), L (plusieurs packages)."
+      options:
+        - S
+        - M
+        - L
+    validations:
+      required: true
+  - type: input
+    id: size-assumption
+    attributes:
+      label: Hypothèse de l'estimation
+      description: En une phrase, sur quoi repose la taille choisie.
+      placeholder: Touche Hero et potentiellement AbilityScore.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Classes liées, issue liée (#…), ou piste de correction.
