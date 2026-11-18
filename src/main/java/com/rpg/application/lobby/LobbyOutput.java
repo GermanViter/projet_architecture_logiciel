@@ -11,7 +11,7 @@ public record LobbyOutput(String id, String hostId, List<LobbyMemberOutput> play
         return new LobbyOutput(
                 lobby.id().getValue(),
                 lobby.host().getValue(),
-                lobby.members().stream().map(LobbyMemberOutput::from).toList(),
+                lobby.members().stream().map(m -> LobbyMemberOutput.from(m.pseudonym())).toList(),
                 lobby.availableSeats());
     }
 }

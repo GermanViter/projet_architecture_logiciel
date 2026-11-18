@@ -36,9 +36,9 @@ class ListLobbiesUseCaseTest {
         lobby2.setStatus(LobbyStatus.CLOSED);
 
         Lobby lobby3 = Lobby.openedBy(new Pseudonym("host3"));
-        // lobby3 is full (max 4)
-        for (int i = 0; i < 4; i++) {
-            lobby3.join(new Pseudonym("p" + i));
+
+        for (int i = 1; i <= 3; i++) {
+            lobby3.join(new Pseudonym("player" + i));
         }
 
         when(lobbyRepository.findAll()).thenReturn(List.of(lobby1, lobby2, lobby3));

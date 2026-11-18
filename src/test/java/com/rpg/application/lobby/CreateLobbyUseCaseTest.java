@@ -1,5 +1,6 @@
 package com.rpg.application.lobby;
 
+import com.rpg.domain.lobby.LobbyMember;
 import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
@@ -68,7 +69,7 @@ class CreateLobbyUseCaseTest {
         ArgumentCaptor<Lobby> saved = ArgumentCaptor.forClass(Lobby.class);
         verify(lobbies).addLobby(saved.capture());
         assertThat(saved.getValue().host()).isEqualTo(aPseudonym());
-        assertThat(saved.getValue().members()).containsExactly(aPseudonym());
+        assertThat(saved.getValue().members()).containsExactly(new LobbyMember(aPseudonym()));
     }
 
     @Test

@@ -27,7 +27,7 @@ class LobbyTest {
     void openedBy_player_makesTheHostTheFirstMember() {
         Lobby lobby = Lobby.openedBy(aPseudonym());
 
-        assertThat(lobby.members()).containsExactly(aPseudonym());
+        assertThat(lobby.members()).containsExactly(new LobbyMember(aPseudonym()));
     }
 
     @Test
@@ -58,7 +58,7 @@ class LobbyTest {
 
         lobby.join(anotherPseudonym());
 
-        assertThat(lobby.members()).containsExactly(aPseudonym(), anotherPseudonym()).inOrder();
+        assertThat(lobby.members()).containsExactly(new LobbyMember(aPseudonym()), new LobbyMember(anotherPseudonym())).inOrder();
     }
 
     @Test
@@ -104,7 +104,7 @@ class LobbyTest {
 
         lobby.leave(anotherPseudonym());
 
-        assertThat(lobby.members()).containsExactly(aPseudonym());
+        assertThat(lobby.members()).containsExactly(new LobbyMember(aPseudonym()));
     }
 
     @Test
@@ -144,6 +144,6 @@ class LobbyTest {
 
         assertThrows(PlayerNotInLobbyException.class, () -> lobby.leave(anotherPseudonym()));
 
-        assertThat(lobby.members()).containsExactly(aPseudonym());
+        assertThat(lobby.members()).containsExactly(new LobbyMember(aPseudonym()));
     }
 }

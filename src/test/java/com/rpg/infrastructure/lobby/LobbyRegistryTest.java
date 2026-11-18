@@ -21,7 +21,7 @@ class LobbyRegistryTest {
     void addLobby_validLobby_isStored() {
         registry.addLobby(aLobby());
 
-        assertThat(registry.allLobbies()).hasSize(1);
+        assertThat(registry.findAll()).hasSize(1);
     }
 
     @Test
@@ -37,7 +37,7 @@ class LobbyRegistryTest {
 
         assertThrows(PlayerAlreadyInLobbyException.class, () -> registry.addLobby(aLobby()));
 
-        assertThat(registry.allLobbies()).hasSize(1);
+        assertThat(registry.findAll()).hasSize(1);
     }
 
     @Test
@@ -45,7 +45,7 @@ class LobbyRegistryTest {
         registry.addLobby(aLobby());
         registry.addLobby(aLobbyHostedBy(OTHER_VALUE));
 
-        assertThat(registry.allLobbies()).hasSize(2);
+        assertThat(registry.findAll()).hasSize(2);
     }
 
     @Test
@@ -58,7 +58,7 @@ class LobbyRegistryTest {
 
         registry.addLobby(newLobby);
 
-        assertThat(registry.allLobbies()).containsExactly(previousLobby, newLobby);
+        assertThat(registry.findAll()).containsExactly(previousLobby, newLobby);
     }
 
     @Test
@@ -70,7 +70,7 @@ class LobbyRegistryTest {
 
         registry.removeLobby(removedLobby);
 
-        assertThat(registry.allLobbies()).containsExactly(keptLobby);
+        assertThat(registry.findAll()).containsExactly(keptLobby);
     }
 
     @Test

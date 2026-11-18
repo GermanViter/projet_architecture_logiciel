@@ -27,7 +27,7 @@ public class LobbyMapper {
         return members.stream()
                 .map(m -> new LobbyMemberDetail(
                         m.pseudonym().toString(),
-                        m.hero() != null ? m.hero().id().toString() : null
+                        m.hero() != null ? m.hero().name().getName() : null
                 ))
                 .collect(Collectors.toList());
     }

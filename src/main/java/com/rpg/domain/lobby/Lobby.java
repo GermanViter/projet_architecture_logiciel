@@ -7,16 +7,6 @@ import com.rpg.domain.player.Pseudonym;
 
 import java.util.ArrayList;
 import java.util.List;
-
-package com.rpg.domain.lobby;
-
-import com.rpg.domain.lobby.exceptions.LobbyFullException;
-import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
-import com.rpg.domain.lobby.exceptions.PlayerNotInLobbyException;
-import com.rpg.domain.player.Pseudonym;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public final class Lobby {

@@ -20,13 +20,13 @@ public class GetLobbyDetailsUseCase {
         List<LobbyMemberDetail> memberDetails = lobby.members().stream()
                 .map(m -> new LobbyMemberDetail(
                         m.pseudonym().toString(),
-                        m.hero() != null ? m.hero().id().toString() : null
+                        m.hero() != null ? m.hero().name().getName() : null
                 ))
                 .collect(Collectors.toList());
 
         return new GetLobbyDetailsOutput(
                 lobby.host().toString(),
-                lobby.status().toString(),
+                lobby.status().name(),
                 memberDetails
         );
     }
