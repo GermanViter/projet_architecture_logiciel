@@ -4,6 +4,7 @@ import com.rpg.domain.lobby.LobbyMember;
 import com.rpg.application.session.ConnectedPlayerFinder;
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
+import com.rpg.domain.lobby.LobbyStatus;
 import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.domain.session.SessionToken;
@@ -57,6 +58,7 @@ class CreateLobbyUseCaseTest {
         LobbyOutput output = useCase.execute(new CreateLobbyCommand(VALID_TOKEN));
 
         assertThat(output.hostId()).isEqualTo(VALID_VALUE);
+        assertThat(output.status()).isEqualTo(LobbyStatus.OPEN.name());
         assertThat(output.players()).containsExactly(new LobbyMemberOutput(VALID_VALUE, VALID_VALUE, NO_HERO_SELECTED));
         assertThat(output.availableSeats()).isEqualTo(MAX_PLAYERS - 1);
         assertThat(output.id()).isNotEmpty();
