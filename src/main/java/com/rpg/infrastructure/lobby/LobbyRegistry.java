@@ -27,6 +27,12 @@ public final class LobbyRegistry implements LobbyRepository {
     }
 
     @Override
+    public synchronized void joinLobby(Lobby lobby, Pseudonym newcomer) {
+        ensureNotInAnotherLobby(lobby, newcomer);
+        lobby.join(newcomer);
+    }
+
+    @Override
     public synchronized Optional<Lobby> findById(LobbyId id) {
         return lobbies.stream().filter(lobby -> lobby.id().equals(id)).findFirst();
     }
@@ -39,5 +45,11 @@ public final class LobbyRegistry implements LobbyRepository {
     @Override
     public synchronized List<Lobby> findAll() {
         return new ArrayList<>(lobbies);
+    }
+
+    private void ensureNotInAnotherLobby(Lobby lobby, Pseudonym newcomer) {
+        if (hasLobbyWithMember(newcomer) && !lobby.hasMember(newcomer)) {
+            throw new PlayerAlreadyInLobbyException();
+        }
     }
 }
