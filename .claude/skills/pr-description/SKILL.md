@@ -5,7 +5,7 @@ description: Writes pull request descriptions for our team's Java API project. U
 
 # PR Description
 
-Look at the branch changes first (`git diff main...HEAD` and `git log main..HEAD --oneline`), then write the description in this format (headings are in French on purpose, copy them as-is):
+Look at the branch changes first against the PR's target branch (`develop` by default, or the branch explicitly given, e.g. `master` for a release): `git diff <target>...HEAD` and `git log <target>..HEAD --oneline`. Then write the description in this format (headings are in French on purpose, copy them as-is):
 
 ## Résumé
 One or two sentences: what this PR does and why.
