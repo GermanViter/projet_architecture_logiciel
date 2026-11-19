@@ -6,6 +6,7 @@ import com.rpg.domain.lobby.LobbyId;
 import com.rpg.domain.lobby.LobbyRepository;
 import com.rpg.domain.lobby.LobbyStatus;
 import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
+import com.rpg.domain.lobby.exceptions.LobbyNotOpenException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.player.PlayerRepository;
@@ -31,6 +32,7 @@ import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
 import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -116,6 +118,18 @@ class JoinLobbyUseCaseTest {
 
         assertThrows(PlayerAlreadyMemberException.class,
                 () -> useCase.execute(joinCommandFor(lobbyOfThePlayer)));
+    }
+
+    @Test
+    void execute_lobbyLeftByItsLastMemberAfterLookup_isRefusedAndDoesNotJoin() {
+        whenTokenBelongsToAPlayer();
+        whenLobbyIsStored(lobbyHostedByAnotherPlayer);
+        lobbyHostedByAnotherPlayer.leave(anotherPseudonym());
+
+        assertThrows(LobbyNotOpenException.class,
+                () -> useCase.execute(joinCommandFor(lobbyHostedByAnotherPlayer)));
+
+        assertThat(lobbyHostedByAnotherPlayer.hasMember(aPseudonym())).isFalse();
     }
 
     @Test
