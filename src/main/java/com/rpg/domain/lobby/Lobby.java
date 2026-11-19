@@ -41,7 +41,7 @@ public final class Lobby {
     }
 
     public synchronized Pseudonym host() {
-        return members.get(0).pseudonym();
+        return currentHost().orElseThrow();
     }
 
     public synchronized void join(Pseudonym player) {
@@ -99,6 +99,10 @@ public final class Lobby {
 
     public synchronized boolean isJoinable() {
         return status == LobbyStatus.OPEN && availableSeats() > 0;
+    }
+
+    private Optional<Pseudonym> currentHost() {
+        return members.stream().findFirst().map(LobbyMember::pseudonym);
     }
 
     private void ensureIsOpen() {
