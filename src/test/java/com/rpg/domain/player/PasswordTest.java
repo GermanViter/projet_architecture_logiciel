@@ -44,11 +44,11 @@ class PasswordTest {
     }
 
     @Test
-    void password_sameInput_producesSameHash() {
+    void password_sameInput_producesDifferentHashesThanksToItsOwnSalt() {
         Password first = new Password(VALID_VALUE);
         Password second = new Password(VALID_VALUE);
 
-        assertThat(first.getHash()).isEqualTo(second.getHash());
+        assertThat(first.getHash()).isNotEqualTo(second.getHash());
     }
 
     @Test
