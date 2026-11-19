@@ -175,6 +175,35 @@ class LobbyTest {
     }
 
     @Test
+    void leave_lastMember_closesTheLobby() {
+        Lobby lobby = aLobby();
+
+        lobby.leave(aPseudonym());
+
+        assertThat(lobby.status()).isEqualTo(LobbyStatus.CLOSED);
+    }
+
+    @Test
+    void leave_oneOfTwoMembers_keepsTheLobbyOpen() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+
+        lobby.leave(aPseudonym());
+
+        assertThat(lobby.status()).isEqualTo(LobbyStatus.OPEN);
+    }
+
+    @Test
+    void join_lobbyLeftByItsLastMember_isRefusedAndTheLobbyStaysEmpty() {
+        Lobby lobby = aLobby();
+        lobby.leave(aPseudonym());
+
+        assertThrows(LobbyNotOpenException.class, () -> lobby.join(anotherPseudonym()));
+
+        assertThat(lobby.isEmpty()).isTrue();
+    }
+
+    @Test
     void snapshot_lobbyWithTwoMembers_holdsTheHostStatusAndMembersOfTheSameState() {
         Lobby lobby = aLobby();
         lobby.join(anotherPseudonym());
@@ -318,13 +347,13 @@ class LobbyTest {
     }
 
     @Test
-    void startGame_afterTheLastMemberLeft_isRefusedAndLobbyStaysOpen() {
+    void startGame_afterTheLastMemberLeft_isRefusedAndLobbyStaysClosed() {
         Lobby lobby = aLobbyReadyToStartWithMembers(MIN_PLAYERS);
         lobby.leave(aPseudonym());
 
         assertThrows(NotHostException.class, () -> lobby.startGame(aPseudonym()));
 
-        assertThat(lobby.status()).isEqualTo(LobbyStatus.OPEN);
+        assertThat(lobby.status()).isEqualTo(LobbyStatus.CLOSED);
     }
 
     @Test

@@ -64,6 +64,7 @@ public final class Lobby {
         LobbyMember member = findMember(player)
                 .orElseThrow(PlayerNotInLobbyException::new);
         members.remove(member);
+        closeWhenEmpty();
     }
 
     public synchronized void selectHero(Pseudonym player, Hero hero) {
@@ -107,6 +108,12 @@ public final class Lobby {
 
     private Optional<Pseudonym> currentHost() {
         return members.stream().findFirst().map(LobbyMember::pseudonym);
+    }
+
+    private void closeWhenEmpty() {
+        if (members.isEmpty()) {
+            status = LobbyStatus.CLOSED;
+        }
     }
 
     private void ensureIsOpen() {
