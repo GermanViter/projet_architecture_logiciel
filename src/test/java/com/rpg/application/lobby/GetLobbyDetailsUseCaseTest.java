@@ -19,6 +19,7 @@ import static com.rpg.domain.lobby.fixtures.LobbyFixture.UNKNOWN_LOBBY_ID;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -57,5 +58,14 @@ class GetLobbyDetailsUseCaseTest {
         when(lobbies.findById(LobbyId.of(UNKNOWN_LOBBY_ID))).thenReturn(Optional.empty());
 
         assertThrows(LobbyNotFoundException.class, () -> useCase.execute(UNKNOWN_LOBBY_ID));
+    }
+
+    @Test
+    void execute_lobbyLeftByItsLastMember_isRefusedAsNotFound() {
+        Lobby lobby = aLobby();
+        lobby.leave(aPseudonym());
+        when(lobbies.findById(lobby.id())).thenReturn(Optional.of(lobby));
+
+        assertThrows(LobbyNotFoundException.class, () -> useCase.execute(lobby.id().getValue()));
     }
 }
