@@ -11,6 +11,7 @@ import com.rpg.domain.lobby.exceptions.PlayersNotReadyException;
 import com.rpg.domain.player.Pseudonym;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -171,6 +172,30 @@ class LobbyTest {
         lobby.leave(aPseudonym());
 
         assertThat(lobby.isEmpty()).isTrue();
+    }
+
+    @Test
+    void snapshot_lobbyWithTwoMembers_holdsTheHostStatusAndMembersOfTheSameState() {
+        Lobby lobby = aLobby();
+        lobby.join(anotherPseudonym());
+
+        LobbySnapshot snapshot = lobby.snapshot();
+
+        assertThat(snapshot).isEqualTo(new LobbySnapshot(
+                Optional.of(aPseudonym()),
+                LobbyStatus.OPEN,
+                List.of(new LobbyMember(aPseudonym()), new LobbyMember(anotherPseudonym()))));
+    }
+
+    @Test
+    void snapshot_lobbyLeftByItsLastMember_hasNoHostAndNoMembers() {
+        Lobby lobby = aLobby();
+        lobby.leave(aPseudonym());
+
+        LobbySnapshot snapshot = lobby.snapshot();
+
+        assertThat(snapshot.host()).isEmpty();
+        assertThat(snapshot.members()).isEmpty();
     }
 
     @Test

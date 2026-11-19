@@ -44,6 +44,10 @@ public final class Lobby {
         return currentHost().orElseThrow();
     }
 
+    public synchronized LobbySnapshot snapshot() {
+        return new LobbySnapshot(currentHost(), status, List.copyOf(members));
+    }
+
     public synchronized void join(Pseudonym player) {
         ensureIsOpen();
         if (hasMember(player)) {
