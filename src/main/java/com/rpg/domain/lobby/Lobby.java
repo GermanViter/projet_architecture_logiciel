@@ -45,7 +45,8 @@ public final class Lobby {
     }
 
     public synchronized LobbySnapshot snapshot() {
-        return new LobbySnapshot(currentHost(), status, List.copyOf(members));
+        return new LobbySnapshot(id, currentHost(), status, List.copyOf(members),
+                availableSeats(), capacity(), isJoinable());
     }
 
     public synchronized void join(Pseudonym player) {

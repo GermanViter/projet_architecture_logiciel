@@ -30,6 +30,7 @@ import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LobbyTest {
+    private static final int TWO_MEMBERS = 2;
 
     @Test
     void openedBy_player_makesThatPlayerTheHost() {
@@ -204,20 +205,24 @@ class LobbyTest {
     }
 
     @Test
-    void snapshot_lobbyWithTwoMembers_holdsTheHostStatusAndMembersOfTheSameState() {
+    void snapshot_lobbyWithTwoMembers_holdsEveryValueOfTheSameState() {
         Lobby lobby = aLobby();
         lobby.join(anotherPseudonym());
 
         LobbySnapshot snapshot = lobby.snapshot();
 
         assertThat(snapshot).isEqualTo(new LobbySnapshot(
+                lobby.id(),
                 Optional.of(aPseudonym()),
                 LobbyStatus.OPEN,
-                List.of(new LobbyMember(aPseudonym()), new LobbyMember(anotherPseudonym()))));
+                List.of(new LobbyMember(aPseudonym()), new LobbyMember(anotherPseudonym())),
+                MAX_PLAYERS - TWO_MEMBERS,
+                MAX_PLAYERS,
+                true));
     }
 
     @Test
-    void snapshot_lobbyLeftByItsLastMember_hasNoHostAndNoMembers() {
+    void snapshot_lobbyLeftByItsLastMember_hasNoHostNoMembersAndIsNotJoinable() {
         Lobby lobby = aLobby();
         lobby.leave(aPseudonym());
 
@@ -225,6 +230,7 @@ class LobbyTest {
 
         assertThat(snapshot.host()).isEmpty();
         assertThat(snapshot.members()).isEmpty();
+        assertThat(snapshot.joinable()).isFalse();
     }
 
     @Test
