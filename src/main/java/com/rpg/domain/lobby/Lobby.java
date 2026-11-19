@@ -41,7 +41,12 @@ public final class Lobby {
     }
 
     public synchronized Pseudonym host() {
-        return members.get(0).pseudonym();
+        return currentHost().orElseThrow();
+    }
+
+    public synchronized LobbySnapshot snapshot() {
+        return new LobbySnapshot(id, currentHost(), status, List.copyOf(members),
+                availableSeats(), capacity(), isJoinable());
     }
 
     public synchronized void join(Pseudonym player) {
@@ -60,6 +65,7 @@ public final class Lobby {
         LobbyMember member = findMember(player)
                 .orElseThrow(PlayerNotInLobbyException::new);
         members.remove(member);
+        closeWhenEmpty();
     }
 
     public synchronized void selectHero(Pseudonym player, Hero hero) {
@@ -99,6 +105,16 @@ public final class Lobby {
 
     public synchronized boolean isJoinable() {
         return status == LobbyStatus.OPEN && availableSeats() > 0;
+    }
+
+    private Optional<Pseudonym> currentHost() {
+        return members.stream().findFirst().map(LobbyMember::pseudonym);
+    }
+
+    private void closeWhenEmpty() {
+        if (members.isEmpty()) {
+            status = LobbyStatus.CLOSED;
+        }
     }
 
     private void ensureIsOpen() {

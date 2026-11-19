@@ -2,6 +2,7 @@ package com.rpg.application.lobby;
 
 import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyRepository;
+import com.rpg.domain.lobby.LobbySnapshot;
 import java.util.List;
 
 public class ListLobbiesUseCase {
@@ -13,7 +14,8 @@ public class ListLobbiesUseCase {
 
     public ListLobbiesOutput execute() {
         List<LobbySummary> summaries = lobbyRepository.findAll().stream()
-                .filter(Lobby::isJoinable)
+                .map(Lobby::snapshot)
+                .filter(LobbySnapshot::joinable)
                 .map(LobbySummary::from)
                 .toList();
 

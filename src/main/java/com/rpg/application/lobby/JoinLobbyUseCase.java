@@ -5,7 +5,6 @@ import com.rpg.domain.lobby.Lobby;
 import com.rpg.domain.lobby.LobbyId;
 import com.rpg.domain.lobby.LobbyRepository;
 import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
-import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
 import com.rpg.domain.player.Pseudonym;
 
 public final class JoinLobbyUseCase {
@@ -22,15 +21,8 @@ public final class JoinLobbyUseCase {
         Lobby lobby = lobbies.findById(LobbyId.of(command.lobbyId()))
                 .orElseThrow(LobbyNotFoundException::new);
 
-        ensureNotInAnotherLobby(newcomer, lobby);
-        lobby.join(newcomer);
+        lobbies.joinLobby(lobby, newcomer);
 
         return new JoinLobbyOutput(newcomer.getValue(), LobbyOutput.from(lobby));
-    }
-
-    private void ensureNotInAnotherLobby(Pseudonym newcomer, Lobby lobby) {
-        if (lobbies.hasLobbyWithMember(newcomer) && !lobby.hasMember(newcomer)) {
-            throw new PlayerAlreadyInLobbyException();
-        }
     }
 }

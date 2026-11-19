@@ -8,9 +8,13 @@ public final class BearerToken {
     private BearerToken() {}
 
     public static String extractFrom(String authorization) {
-        if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
+        if (authorization == null || !hasBearerScheme(authorization)) {
             throw new InvalidSessionException();
         }
         return authorization.substring(BEARER_PREFIX.length()).trim();
+    }
+
+    private static boolean hasBearerScheme(String authorization) {
+        return authorization.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length());
     }
 }
