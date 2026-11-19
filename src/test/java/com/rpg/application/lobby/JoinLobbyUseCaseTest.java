@@ -6,9 +6,7 @@ import com.rpg.domain.lobby.LobbyId;
 import com.rpg.domain.lobby.LobbyRepository;
 import com.rpg.domain.lobby.LobbyStatus;
 import com.rpg.domain.lobby.exceptions.LobbyNotFoundException;
-import com.rpg.domain.lobby.exceptions.LobbyNotOpenException;
 import com.rpg.domain.lobby.exceptions.PlayerAlreadyInLobbyException;
-import com.rpg.domain.lobby.exceptions.PlayerAlreadyMemberException;
 import com.rpg.domain.player.PlayerRepository;
 import com.rpg.domain.session.SessionRepository;
 import com.rpg.domain.session.SessionToken;
@@ -25,17 +23,18 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.MAX_PLAYERS;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.UNKNOWN_LOBBY_ID;
-import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobby;
 import static com.rpg.domain.lobby.fixtures.LobbyFixture.aLobbyHostedBy;
 import static com.rpg.domain.player.fixtures.EmailFixture.anEmail;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.aPseudonym;
-import static com.rpg.domain.player.fixtures.PseudonymFixture.anotherPseudonym;
 import static com.rpg.domain.session.fixtures.SessionTokenFixture.VALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -63,19 +62,20 @@ class JoinLobbyUseCaseTest {
     }
 
     @Test
-    void execute_connectedPlayer_becomesAMemberOfTheLobby() {
+    void execute_connectedPlayer_asksTheRegistryToJoinTheLobby() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored(lobbyHostedByAnotherPlayer);
 
         useCase.execute(joinCommandFor(lobbyHostedByAnotherPlayer));
 
-        assertThat(lobbyHostedByAnotherPlayer.hasMember(aPseudonym())).isTrue();
+        verify(lobbies).joinLobby(lobbyHostedByAnotherPlayer, aPseudonym());
     }
 
     @Test
     void execute_connectedPlayer_returnsTheNewMemberAndTheUpdatedLobby() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored(lobbyHostedByAnotherPlayer);
+        whenTheRegistryAcceptsTheJoin(lobbyHostedByAnotherPlayer);
 
         JoinLobbyOutput output = useCase.execute(joinCommandFor(lobbyHostedByAnotherPlayer));
 
@@ -98,38 +98,14 @@ class JoinLobbyUseCaseTest {
     }
 
     @Test
-    void execute_playerAlreadyInAnotherOpenLobby_isRefusedAndDoesNotJoin() {
+    void execute_joinRefusedByTheRegistry_isRefused() {
         whenTokenBelongsToAPlayer();
         whenLobbyIsStored(lobbyHostedByAnotherPlayer);
-        when(lobbies.hasLobbyWithMember(aPseudonym())).thenReturn(true);
+        doThrow(new PlayerAlreadyInLobbyException())
+                .when(lobbies).joinLobby(lobbyHostedByAnotherPlayer, aPseudonym());
 
         assertThrows(PlayerAlreadyInLobbyException.class,
                 () -> useCase.execute(joinCommandFor(lobbyHostedByAnotherPlayer)));
-
-        assertThat(lobbyHostedByAnotherPlayer.hasMember(aPseudonym())).isFalse();
-    }
-
-    @Test
-    void execute_playerAlreadyMemberOfThisLobby_isRefusedAsAlreadyMember() {
-        Lobby lobbyOfThePlayer = aLobby();
-        whenTokenBelongsToAPlayer();
-        whenLobbyIsStored(lobbyOfThePlayer);
-        when(lobbies.hasLobbyWithMember(aPseudonym())).thenReturn(true);
-
-        assertThrows(PlayerAlreadyMemberException.class,
-                () -> useCase.execute(joinCommandFor(lobbyOfThePlayer)));
-    }
-
-    @Test
-    void execute_lobbyLeftByItsLastMemberAfterLookup_isRefusedAndDoesNotJoin() {
-        whenTokenBelongsToAPlayer();
-        whenLobbyIsStored(lobbyHostedByAnotherPlayer);
-        lobbyHostedByAnotherPlayer.leave(anotherPseudonym());
-
-        assertThrows(LobbyNotOpenException.class,
-                () -> useCase.execute(joinCommandFor(lobbyHostedByAnotherPlayer)));
-
-        assertThat(lobbyHostedByAnotherPlayer.hasMember(aPseudonym())).isFalse();
     }
 
     @Test
@@ -149,6 +125,13 @@ class JoinLobbyUseCaseTest {
 
     private void whenLobbyIsStored(Lobby lobby) {
         when(lobbies.findById(lobby.id())).thenReturn(Optional.of(lobby));
+    }
+
+    private void whenTheRegistryAcceptsTheJoin(Lobby lobby) {
+        doAnswer(invocation -> {
+            lobby.join(aPseudonym());
+            return null;
+        }).when(lobbies).joinLobby(lobby, aPseudonym());
     }
 
     private static JoinLobbyCommand joinCommandFor(Lobby lobby) {
