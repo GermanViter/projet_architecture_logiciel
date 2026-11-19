@@ -16,6 +16,16 @@ class BearerTokenTest {
     }
 
     @Test
+    void extractFrom_lowercaseScheme_returnsTheTokenWithItsCaseKept() {
+        assertThat(BearerToken.extractFrom("bearer " + TOKEN)).isEqualTo(TOKEN);
+    }
+
+    @Test
+    void extractFrom_uppercaseScheme_returnsTheTokenWithItsCaseKept() {
+        assertThat(BearerToken.extractFrom("BEARER " + TOKEN)).isEqualTo(TOKEN);
+    }
+
+    @Test
     void extractFrom_otherScheme_isRejected() {
         assertThrows(InvalidSessionException.class,
                 () -> BearerToken.extractFrom("Basic " + TOKEN));
