@@ -8,12 +8,13 @@ import com.rpg.domain.player.exceptions.DuplicatePlayerException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class PlayerRegistry implements PlayerRepository {
     private final List<Player> players = new ArrayList<>();
 
     @Override
-    public void addPlayer(Player player) {
+    public synchronized void addPlayer(Player player) {
         if (pseudonymAlreadyExists(player.pseudonym())) {
             throw new DuplicatePlayerException("pseudonym", player.pseudonym().getValue());
         }
@@ -31,7 +32,17 @@ public final class PlayerRegistry implements PlayerRepository {
         return players.stream().anyMatch(p -> p.email().equals(email));
     }
 
-    public List<Player> allPlayers() {
+    @Override
+    public synchronized Optional<Player> findByEmail(Email email) {
+        return players.stream().filter(p -> p.email().equals(email)).findFirst();
+    }
+
+    @Override
+    public synchronized Optional<Player> findById(String playerId) {
+        return players.stream().filter(p -> p.pseudonym().getValue().equals(playerId)).findFirst();
+    }
+
+    public synchronized List<Player> allPlayers() {
         return new ArrayList<>(players);
     }
 }

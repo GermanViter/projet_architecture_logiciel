@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayer;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayerWithEmail;
 import static com.rpg.domain.player.fixtures.PlayerFixture.aPlayerWithPseudonym;
+import static com.rpg.domain.player.fixtures.PseudonymFixture.OTHER_VALUE;
 import static com.rpg.domain.player.fixtures.PseudonymFixture.VALID_VALUE;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,5 +54,39 @@ class PlayerRegistryTest {
         registry.addPlayer(aPlayerWithEmail("bob@example.com"));
 
         assertThat(registry.allPlayers()).hasSize(2);
+    }
+
+    @Test
+    void findByEmail_existingEmail_returnsPlayer() {
+        registry.addPlayer(aPlayer());
+
+        var result = registry.findByEmail(new com.rpg.domain.player.Email("alice@example.com"));
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void findByEmail_unknownEmail_returnsEmpty() {
+        var result = registry.findByEmail(new com.rpg.domain.player.Email("unknown@example.com"));
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findById_pseudonymOfAStoredPlayer_returnsPlayer() {
+        registry.addPlayer(aPlayer());
+
+        var result = registry.findById(VALID_VALUE);
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void findById_unknownPseudonym_returnsEmpty() {
+        registry.addPlayer(aPlayer());
+
+        var result = registry.findById(OTHER_VALUE);
+
+        assertThat(result).isEmpty();
     }
 }
